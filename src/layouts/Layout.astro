@@ -11,7 +11,42 @@ import "../styles/global.css";
     <meta name="generator" content={Astro.generator} />
     <title>Carmen AI: Put Your Data to Work</title>
   </head>
-  <body>
-    <slot />
+  <body class="font-sans">
+    <div
+      class="fixed inset-0 bg-gradient-to-b from-white via-white to-neutral-200 -z-10"
+    >
+    </div>
+    <div class="flex flex-col min-h-screen">
+      <header class="w-full border-b border-neutral-200 py-4 px-2 sm:px-6">
+        <nav class="flex items-center justify-between gap-4 text-lg sm:text-xl">
+          <a
+            href="/"
+            class="font-display font-semibold flex-grow text-neutral-900"
+            >Carmen.AI</a
+          >
+          <a
+            href="mailto:Graham Thompson <graham@getcarmen.ai>,Dave Peck <dave@getcarmen.ai>"
+            title="Email Dave and Graham"
+            class="inline-flex rounded-full px-4 py-1.5 text-sm sm:text-base font-semibold transition bg-neutral-950 text-white hover:bg-neutral-500"
+            >Get in touch</a
+          >
+        </nav>
+      </header>
+      <div
+        class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-20 sm:py-32 lg:py-40 text-balance"
+      >
+        <slot />
+      </div>
+      <footer
+        class="w-full border-t border-neutral-200 py-4 px-2 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-neutral-600"
+      >
+        <p>&copy; {new Date().getFullYear()} Carmen.AI. All rights reserved.</p>
+        <!-- <nav>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms of Service</a>
+        <a href="/contact">Contact</a>
+      </nav> -->
+      </footer>
+    </div>
   </body>
 </html>

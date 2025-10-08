@@ -1,1 +1,29 @@
 @import "tailwindcss";
+
+@font-face {
+  font-family: "Mona Sans";
+  src: url("/fonts/Mona-Sans.var.woff2") format("woff2");
+  font-weight: 100 900;
+  font-stretch: 75% 125%;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --radius-4xl: 2.5rem;
+
+  --font-sans: "Mona Sans", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  --font-display: "Mona Sans", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  --font-display--font-variation-settings: "wdth" 125;
+
+  --font-display-length: 2;
+
+  --color-carmen-red: #c1121f;
+  --color-deep-noir: #1c1c1c;
+  --color-explorer-yellow: #ffb705;
+  --color-shadow-grave: #4ddadd;
+}
