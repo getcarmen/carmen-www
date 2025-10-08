@@ -10,6 +10,12 @@ import "../styles/global.css";
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>Carmen AI: Put Your Data to Work</title>
+    <script>
+      // Redirect www to non-www (the cheap way)
+      if (location.host.startsWith("www.")) {
+        location.host = location.host.slice(4);
+      }
+    </script>
   </head>
   <body class="font-sans">
     <div
