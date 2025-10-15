@@ -2,11 +2,7 @@
 // Draw a 3D trefoil knot using ASCII characters
 ---
 
-<div
-  id="ascii-canvas"
-  class="absolute inset-0 z-30 ascii-background bg-white opacity-70"
->
-</div>
+<div id="ascii-canvas" class="absolute inset-0 z-30 ascii-background"></div>
 
 <script>
   class TrefoilKnotRenderer {
@@ -33,25 +29,25 @@
       this.canvas.style.fontSize = "10px";
       this.canvas.style.overflow = "hidden";
       this.canvas.style.whiteSpace = "pre";
-      this.canvas.style.color = "#d0d0d0";
+      this.canvas.style.color = "#000";
       this.container.appendChild(this.canvas);
       this.width = 0;
       this.height = 0;
 
       // ASCII characters from darkest to brightest
-      this.asciiChars = " .:-=+*#%@";
+      this.asciiChars = " .:-=+*#%@▒▓█";
 
       // Animation parameters
       this.time = 0;
-      this.animationSpeed = 0.1;
+      this.animationSpeed = 0.2;
 
       // Rendering parameters
-      this.knotRadius = 1.5; // Radius of the tube around the knot
-      this.scale = 15; // Scale factor for the knot
+      this.knotRadius = 0.5; // Radius of the tube around the knot - smaller for clearer shape
+      this.scale = 20; // Scale factor for the knot - larger to see it better
       this.perspective = 400; // Perspective distance
 
       // Pre-compute knot points
-      this.knotSamples = 100;
+      this.knotSamples = 150; // More samples for better detail
       this.knotPoints = [];
       for (let i = 0; i < this.knotSamples; i++) {
         const t = (i / this.knotSamples) * Math.PI * 2;
@@ -129,13 +125,13 @@
     distanceToKnot(px: number, py: number, pz: number) {
       let minDist = Infinity;
 
-      // Pre-compute rotation matrices
-      const cosX = Math.cos(this.time * 0.5);
-      const sinX = Math.sin(this.time * 0.5);
-      const cosY = Math.cos(this.time * 0.7);
-      const sinY = Math.sin(this.time * 0.7);
-      const cosZ = Math.cos(this.time * 0.3);
-      const sinZ = Math.sin(this.time * 0.3);
+      // Pre-compute rotation matrices - better angles to show trefoil structure
+      const cosX = Math.cos(this.time * 0.3);
+      const sinX = Math.sin(this.time * 0.3);
+      const cosY = Math.cos(this.time * 0.5);
+      const sinY = Math.sin(this.time * 0.5);
+      const cosZ = Math.cos(this.time * 0.2);
+      const sinZ = Math.sin(this.time * 0.2);
 
       for (let i = 0; i < this.knotSamples; i++) {
         const knot = this.knotPoints[i];
@@ -187,12 +183,12 @@
         let row = "";
         for (let x = 0; x < this.width; x++) {
           // Map screen coordinates to world coordinates
-          const worldX = (x / this.width - 0.5) * 60 * aspectRatio;
-          const worldY = (y / this.height - 0.5) * 60;
+          const worldX = (x / this.width - 0.5) * 80 * aspectRatio;
+          const worldY = (y / this.height - 0.5) * 80;
 
           // Simplified ray marching - fewer steps
           let brightness = 0;
-          const raySteps = 15; // Reduced from 30
+          const raySteps = 20; // Increased slightly for better quality
 
           for (let step = 0; step < raySteps; step++) {
             const depth = -50 + (step * 100) / raySteps;
