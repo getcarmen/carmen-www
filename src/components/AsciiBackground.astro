@@ -1,0 +1,233 @@
+---
+// Draw a 3D trefoil knot using ASCII characters
+---
+
+<div id="ascii-canvas" class="fixed inset-0 z-30 ascii-background bg-white">
+</div>
+
+<script>
+  class TrefoilKnotRenderer {
+    container: HTMLElement;
+    canvas: HTMLPreElement;
+    asciiChars: string;
+    time: number;
+    animationSpeed: number;
+    knotRadius: number;
+    scale: number;
+    perspective: number;
+    width: number;
+    height: number;
+
+    constructor(container: HTMLElement) {
+      this.container = container;
+      this.canvas = document.createElement("pre");
+      this.canvas.style.margin = "0";
+      this.canvas.style.padding = "0";
+      this.canvas.style.lineHeight = "1";
+      this.canvas.style.fontFamily = "monospace";
+      this.canvas.style.fontSize = "10px";
+      this.canvas.style.overflow = "hidden";
+      this.canvas.style.whiteSpace = "pre";
+      this.canvas.style.color = "#d0d0d0";
+      this.container.appendChild(this.canvas);
+      this.width = 0;
+      this.height = 0;
+
+      // ASCII characters from darkest to brightest
+      this.asciiChars = " .:-=+*#%@";
+
+      // Animation parameters
+      this.time = 0;
+      this.animationSpeed = 0.1;
+
+      // Rendering parameters
+      this.knotRadius = 1.5; // Radius of the tube around the knot
+      this.scale = 15; // Scale factor for the knot
+      this.perspective = 400; // Perspective distance
+
+      this.setupResize();
+      this.animate();
+    }
+
+    setupResize() {
+      const resize = () => {
+        const rect = this.container.getBoundingClientRect();
+        this.width = Math.floor(rect.width / 6); // Approximate char width
+        this.height = Math.floor(rect.height / 10); // Approximate char height
+        this.render();
+      };
+
+      window.addEventListener("resize", resize);
+      resize();
+    }
+
+    // Parametric equations for a trefoil knot
+    trefoilKnot(t: number) {
+      const x = Math.sin(t) + 2 * Math.sin(2 * t);
+      const y = Math.cos(t) - 2 * Math.cos(2 * t);
+      const z = -Math.sin(3 * t);
+      return { x, y, z };
+    }
+
+    // Rotate point around X axis
+    rotateX(p: { x: number; y: number; z: number }, angle: number) {
+      const cos = Math.cos(angle);
+      const sin = Math.sin(angle);
+      return {
+        x: p.x,
+        y: p.y * cos - p.z * sin,
+        z: p.y * sin + p.z * cos,
+      };
+    }
+
+    // Rotate point around Y axis
+    rotateY(p: { x: number; y: number; z: number }, angle: number) {
+      const cos = Math.cos(angle);
+      const sin = Math.sin(angle);
+      return {
+        x: p.x * cos + p.z * sin,
+        y: p.y,
+        z: -p.x * sin + p.z * cos,
+      };
+    }
+
+    // Rotate point around Z axis
+    rotateZ(p: { x: number; y: number; z: number }, angle: number) {
+      const cos = Math.cos(angle);
+      const sin = Math.sin(angle);
+      return {
+        x: p.x * cos - p.y * sin,
+        y: p.x * sin + p.y * cos,
+        z: p.z,
+      };
+    }
+
+    // Project 3D point to 2D with perspective
+    project(p: { x: number; y: number; z: number }) {
+      const factor = this.perspective / (this.perspective + p.z);
+      return {
+        x: p.x * factor,
+        y: p.y * factor,
+        z: p.z,
+      };
+    }
+
+    // Calculate distance from a point to the knot surface
+    distanceToKnot(px: number, py: number, pz: number) {
+      let minDist = Infinity;
+      const samples = 200; // Number of samples along the knot
+
+      for (let i = 0; i < samples; i++) {
+        const t = (i / samples) * Math.PI * 2;
+        const knot = this.trefoilKnot(t);
+
+        // Apply rotations
+        let rotated = this.rotateX(knot, this.time * 0.5);
+        rotated = this.rotateY(rotated, this.time * 0.7);
+        rotated = this.rotateZ(rotated, this.time * 0.3);
+
+        // Scale
+        rotated.x *= this.scale;
+        rotated.y *= this.scale;
+        rotated.z *= this.scale;
+
+        // Calculate distance
+        const dx = px - rotated.x;
+        const dy = py - rotated.y;
+        const dz = pz - rotated.z;
+        const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+        minDist = Math.min(minDist, dist);
+      }
+
+      return minDist;
+    }
+
+    // Render the knot
+    render() {
+      if (!this.width || !this.height) return;
+
+      const buffer = [];
+      const aspectRatio = this.width / this.height;
+
+      for (let y = 0; y < this.height; y++) {
+        let row = "";
+        for (let x = 0; x < this.width; x++) {
+          // Map screen coordinates to world coordinates
+          const worldX = (x / this.width - 0.5) * 60 * aspectRatio;
+          const worldY = (y / this.height - 0.5) * 60;
+
+          // Ray marching from camera
+          let brightness = 0;
+          const raySteps = 30;
+
+          for (let depth = -50; depth < 50; depth += 100 / raySteps) {
+            const dist = this.distanceToKnot(worldX, worldY, depth);
+
+            // If we're close to the surface, calculate brightness
+            if (dist < this.knotRadius * this.scale) {
+              // Distance from surface (0 = on surface, 1 = at edge of tube)
+              const surfaceDist = dist / (this.knotRadius * this.scale);
+
+              // Calculate brightness based on distance and depth
+              const depthFactor = 1 - (depth + 50) / 100;
+              brightness = Math.max(
+                brightness,
+                (1 - surfaceDist) * depthFactor
+              );
+            }
+          }
+
+          // Map brightness to ASCII character
+          const charIndex = Math.floor(
+            brightness * (this.asciiChars.length - 1)
+          );
+          const char =
+            this.asciiChars[
+              Math.max(0, Math.min(charIndex, this.asciiChars.length - 1))
+            ];
+          row += char;
+        }
+        buffer.push(row);
+      }
+
+      this.canvas.textContent = buffer.join("\n");
+    }
+
+    animate() {
+      this.time += this.animationSpeed;
+      this.render();
+      requestAnimationFrame(() => this.animate());
+    }
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+      const container = document.getElementById("ascii-canvas");
+      if (container) {
+        new TrefoilKnotRenderer(container);
+      }
+    });
+  } else {
+    const container = document.getElementById("ascii-canvas");
+    if (container) {
+      new TrefoilKnotRenderer(container);
+    }
+  }
+</script>
+
+<style>
+  .ascii-background {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .ascii-background pre {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+  }
+</style>

@@ -1,4 +1,5 @@
 ---
+import AsciiBackground from "../components/AsciiBackground.astro";
 import "../styles/global.css";
 ---
 
@@ -24,6 +25,7 @@ import "../styles/global.css";
     </script>
   </head>
   <body class="font-sans">
+    <AsciiBackground />
     <div
       class="hidden sm:block fixed inset-0 bg-gradient-to-b from-white via-white to-neutral-200 -z-10"
     >
@@ -44,11 +46,7 @@ import "../styles/global.css";
           >
         </nav>
       </header>
-      <div
-        class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-20 sm:py-32 lg:py-40 text-balance flex-grow"
-      >
-        <slot />
-      </div>
+      <slot />
       <footer
         class="w-full border-t border-neutral-300 py-4 px-2 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-neutral-600"
       >
