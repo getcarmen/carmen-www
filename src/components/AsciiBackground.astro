@@ -1,8 +1,13 @@
 ---
 // Draw a 3D trefoil knot using ASCII characters
+// (c) Dave Peck 2025
 ---
 
-<div id="ascii-canvas" class="absolute inset-0 z-30 ascii-background"></div>
+<div
+  id="ascii-canvas"
+  class="absolute inset-0 overflow-hidden opacity-50 select-none"
+>
+</div>
 
 <script>
   class TrefoilKnotRenderer {
@@ -16,6 +21,7 @@
     width: number;
     height: number;
     knotPoints: Array<{ x: number; y: number; z: number }>;
+    transformedKnotPoints: Array<{ x: number; y: number; z: number }>;
     knotSamples: number;
 
     constructor(container: HTMLElement) {
@@ -28,7 +34,7 @@
       this.canvas.style.fontSize = "10px";
       this.canvas.style.overflow = "hidden";
       this.canvas.style.whiteSpace = "pre";
-      this.canvas.style.color = "#000";
+      this.canvas.style.color = "#888";
       this.container.appendChild(this.canvas);
       this.width = 0;
       this.height = 0;
@@ -38,19 +44,22 @@
 
       // Animation parameters
       this.time = 0;
-      this.animationSpeed = 0.2;
+      this.animationSpeed = 0.05;
 
       // Rendering parameters
       this.knotRadius = 0.5; // Radius of the tube around the knot - smaller for clearer shape
       this.scale = 20; // Scale factor for the knot - larger to see it better
 
       // Pre-compute knot points
-      this.knotSamples = 500; // More samples for better detail
+      this.knotSamples = 50; // More samples for better detail
       this.knotPoints = [];
       for (let i = 0; i < this.knotSamples; i++) {
         const t = (i / this.knotSamples) * Math.PI * 2;
         this.knotPoints.push(this.trefoilKnot(t));
       }
+
+      // Initialize transformed points array
+      this.transformedKnotPoints = new Array(this.knotSamples);
 
       this.setupResize();
       this.animate();
@@ -76,10 +85,8 @@
       return { x, y, z };
     }
 
-    // Calculate distance from a point to the knot surface (optimized)
-    distanceToKnot(px: number, py: number, pz: number) {
-      let minDist = Infinity;
-
+    // Pre-transform all knot points for the current frame
+    updateTransformedPoints() {
       // Pre-compute rotation matrices - better angles to show trefoil structure
       const cosX = Math.cos(this.time * 0.3);
       const sinX = Math.sin(this.time * 0.3);
@@ -106,28 +113,44 @@
         const finalX = x * cosZ - y * sinZ;
         const finalY = x * sinZ + y * cosZ;
 
-        // Scale
-        const scaledX = finalX * this.scale;
-        const scaledY = finalY * this.scale;
-        const scaledZ = z * this.scale;
+        // Scale and store
+        this.transformedKnotPoints[i] = {
+          x: finalX * this.scale,
+          y: finalY * this.scale,
+          z: z * this.scale,
+        };
+      }
+    }
 
-        // Calculate distance
-        const dx = px - scaledX;
-        const dy = py - scaledY;
-        const dz = pz - scaledZ;
-        const dist = dx * dx + dy * dy + dz * dz; // Use squared distance to avoid sqrt
+    // Calculate distance from a point to the knot surface (optimized)
+    distanceToKnot(px: number, py: number, pz: number) {
+      let minDistSq = Infinity;
 
-        if (dist < minDist) {
-          minDist = dist;
+      for (let i = 0; i < this.knotSamples; i++) {
+        const knot = this.transformedKnotPoints[i];
+
+        // Calculate squared distance
+        const dx = px - knot.x;
+        const dy = py - knot.y;
+        const dz = pz - knot.z;
+        const distSq = dx * dx + dy * dy + dz * dz;
+
+        if (distSq < minDistSq) {
+          minDistSq = distSq;
+          // Early exit if we're very close - huge speedup
+          if (minDistSq < 1) break;
         }
       }
 
-      return Math.sqrt(minDist);
+      return Math.sqrt(minDistSq);
     }
 
     // Render the knot
     render() {
       if (!this.width || !this.height) return;
+
+      // Update transformed knot points once per frame
+      this.updateTransformedPoints();
 
       const buffer: string[] = [];
       const aspectRatio = this.width / this.height;
@@ -202,18 +225,3 @@
     }
   }
 </script>
-
-<style>
-  .ascii-background {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: #fff;
-  }
-
-  .ascii-background pre {
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-  }
-</style>
