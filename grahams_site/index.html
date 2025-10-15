@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Carmen AI - Supercharge Your Team with Custom AI Solutions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&family=Inter:wght@300;400;500&family=Space+Grotesk:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary-red: #c1121f;
+        --primary-black: #1c1c1c;
+        --primary-yellow: #ffb705;
+        --text-dark: #1c1c1c;
+        --text-light: #ffffff;
+        --bg-light: #f8f9fa;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        font-weight: 400;
+        color: var(--text-dark);
+        line-height: 1.6;
+      }
+
+      h1,
+      h2 {
+        font-family: "Poppins", sans-serif;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+
+      h3 {
+        font-family: "Poppins", sans-serif;
+        font-weight: 500;
+      }
+
+      /* Header */
+      header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        padding: 1rem 0;
+      }
+
+      nav {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-family: "Poppins", sans-serif;
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: var(--primary-red);
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+      }
+
+      .nav-links a {
+        font-family: "Poppins", sans-serif;
+        font-weight: 500;
+        text-decoration: none;
+        color: var(--text-dark);
+        transition: color 0.3s ease;
+      }
+
+      .nav-links a:hover {
+        color: var(--primary-red);
+      }
+
+      /* Hero Section */
+      .hero {
+        margin-top: 80px;
+        background: linear-gradient(
+          135deg,
+          #0a0a0a 0%,
+          var(--primary-black) 50%,
+          #2a2a2a 100%
+        );
+        color: var(--text-light);
+        padding: 8rem 2rem 6rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(
+            circle at 20% 30%,
+            rgba(193, 18, 31, 0.15) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 70%,
+            rgba(255, 183, 5, 0.1) 0%,
+            transparent 50%
+          );
+        pointer-events: none;
+      }
+
+      .hero-content {
+        max-width: 900px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero h1 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 3.5rem;
+        margin-bottom: 2rem;
+        color: var(--text-light);
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+        animation: fadeInUp 0.8s ease-out;
+      }
+
+      .hero h1 .highlight {
+        background: linear-gradient(
+          135deg,
+          var(--primary-yellow) 0%,
+          #ffd700 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        position: relative;
+        display: inline-block;
+      }
+
+      .hero h1 .highlight::after {
+        content: "";
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--primary-yellow),
+          transparent
+        );
+        opacity: 0.5;
+      }
+
+      .hero p {
+        font-size: 1.2rem;
+        font-weight: 300;
+        line-height: 1.6;
+        opacity: 0.85;
+        letter-spacing: 0.01em;
+        animation: fadeInUp 0.8s ease-out 0.2s both;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Section Styles */
+      section {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 5rem 2rem;
+      }
+
+      section:nth-child(even) {
+        background-color: var(--bg-light);
+      }
+
+      section h2 {
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        color: var(--primary-red);
+      }
+
+      section p {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+        max-width: 900px;
+      }
+
+      /* How We Work Section */
+      .how-we-work ul {
+        list-style: none;
+        margin-top: 2rem;
+      }
+
+      .how-we-work li {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+        padding-left: 2rem;
+        position: relative;
+        line-height: 1.6;
+      }
+
+      .how-we-work li::before {
+        content: "→";
+        position: absolute;
+        left: 0;
+        top: 0.1em;
+        color: var(--primary-yellow);
+        font-weight: bold;
+        font-size: 1.5rem;
+        line-height: 1;
+      }
+
+      /* What We Offer Section */
+      .what-we-offer {
+        background-color: var(--bg-light);
+      }
+
+      .service-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+      }
+
+      .service-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .service-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .service-card .icon {
+        font-size: 3rem;
+        color: var(--primary-red);
+        margin-bottom: 2rem;
+        margin-top: 1rem;
+        display: block;
+      }
+
+      .service-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: var(--primary-black);
+        border-bottom: 3px solid var(--primary-yellow);
+        padding-bottom: 0.5rem;
+      }
+
+      .service-card p {
+        font-size: 1rem;
+        line-height: 1.7;
+      }
+
+      /* Contact Section */
+      .contact {
+        background-color: white;
+      }
+
+      .contact-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        margin-top: 3rem;
+      }
+
+      .team-section h3 {
+        font-size: 1.75rem;
+        margin-bottom: 2rem;
+        color: var(--primary-black);
+      }
+
+      .team-member {
+        margin-bottom: 2.5rem;
+        padding-bottom: 2rem;
+        border-bottom: 2px solid var(--bg-light);
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-start;
+      }
+
+      .team-member:last-child {
+        border-bottom: none;
+      }
+
+      .team-member img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--primary-yellow);
+        flex-shrink: 0;
+      }
+
+      .team-member-info {
+        flex: 1;
+      }
+
+      .team-member h4 {
+        font-family: "Poppins", sans-serif;
+        font-weight: 500;
+        font-size: 1.25rem;
+        color: var(--primary-red);
+        margin-bottom: 0.25rem;
+      }
+
+      .team-member .title {
+        font-family: "Poppins", sans-serif;
+        font-weight: 500;
+        font-size: 0.95rem;
+        color: #666;
+        margin-bottom: 0.5rem;
+      }
+
+      .team-member .email {
+        color: var(--text-dark);
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 0.75rem;
+      }
+
+      .team-member .email:hover {
+        color: var(--primary-red);
+      }
+
+      .social-links {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .social-links a {
+        color: var(--primary-black);
+        font-size: 1.5rem;
+        transition: color 0.3s ease;
+      }
+
+      .social-links a:hover {
+        color: var(--primary-red);
+      }
+
+      /* Contact Form */
+      .contact-form h3 {
+        font-size: 1.75rem;
+        margin-bottom: 2rem;
+        color: var(--primary-black);
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        display: block;
+        font-family: "Poppins", sans-serif;
+        font-weight: 500;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-dark);
+      }
+
+      .form-group input,
+      .form-group textarea,
+      .form-group select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #ddd;
+        border-radius: 4px;
+        font-family: "Inter", sans-serif;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+      }
+
+      .form-group input:focus,
+      .form-group textarea:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: var(--primary-red);
+      }
+
+      .form-group textarea {
+        resize: vertical;
+        min-height: 120px;
+      }
+
+      .submit-btn {
+        background: var(--primary-red);
+        color: white;
+        border: none;
+        padding: 1rem 2.5rem;
+        font-family: "Poppins", sans-serif;
+        font-weight: 500;
+        font-size: 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+      }
+
+      .submit-btn:hover {
+        background: #a00e1a;
+        transform: translateY(-2px);
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .nav-links {
+          gap: 1rem;
+        }
+
+        .hero {
+          padding: 5rem 1.5rem 4rem;
+        }
+
+        .hero h1 {
+          font-size: 2.25rem;
+        }
+
+        .hero p {
+          font-size: 1.1rem;
+          line-height: 1.65;
+        }
+
+        section {
+          padding: 3rem 1.5rem;
+        }
+
+        section h2 {
+          font-size: 2rem;
+        }
+
+        .service-cards {
+          grid-template-columns: 1fr;
+        }
+
+        .contact-container {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+
+        .team-member {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+        }
+
+        .team-member img {
+          width: 120px;
+          height: 120px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .logo {
+          font-size: 1.2rem;
+        }
+
+        .nav-links {
+          flex-direction: column;
+          gap: 0.5rem;
+          align-items: flex-end;
+        }
+
+        .hero h1 {
+          font-size: 1.85rem;
+        }
+
+        .hero p {
+          font-size: 1rem;
+          line-height: 1.6;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <nav>
+        <div class="logo">Carmen AI</div>
+        <ul class="nav-links">
+          <li><a href="#how-we-work">How We Work</a></li>
+          <li><a href="#what-we-offer">What We Offer</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-content">
+        <h1>
+          Supercharge your team with our
+          <span class="highlight">custom AI solutions</span>.
+        </h1>
+
+        <!-- Option 1: Direct, Impact-Focused -->
+        <p>
+          No magic, no hype: we build and deploy AI to multiply the impact of
+          your top performers.
+        </p>
+
+        <!-- Option 2: Expertise & Competitive Edge -->
+        <!-- <p>Leveraging our expertise in Data and AI, we will deliver speciality AI Agents that give your team the competitive edge.</p> -->
+      </div>
+    </section>
+
+    <!-- How We Work Section -->
+    <section id="how-we-work" class="how-we-work">
+      <h2>How we work</h2>
+      <p>
+        At Carmen AI, we are focused on delivering purpose built AI to our
+        clients. We specialize in building and deploying AI agents that will
+        serve as impact multipliers for your team members. Our agents are not
+        designed to replace human work, they are designed to amplify it.
+      </p>
+      <ul>
+        <li>
+          We bring our expertise in data and AI, and we approach every
+          engagement with curiosity to understand your unique business needs.
+        </li>
+        <li>
+          We leverage the latest AI tools in our work which helps us deliver
+          solutions on time and on budget.
+        </li>
+        <li>
+          We do not outsource or offshore our engineering work, it's all done
+          from our HQ in Seattle, WA to ensure every agent we deploy is
+          enterprise ready - secure, reliable, and performant.
+        </li>
+      </ul>
+    </section>
+
+    <!-- What We Offer Section -->
+    <section id="what-we-offer" class="what-we-offer">
+      <h2>What we offer</h2>
+
+      <div class="service-cards">
+        <div class="service-card">
+          <i class="fas fa-search icon"></i>
+          <h3>Opportunity Research & Discovery</h3>
+          <p>
+            Using the "jobs to be done" approach derived from years of building
+            enterprise software products, our engagements begin with
+            understanding your business. During the first phase of our
+            engagement we will focus on research and discovery - understanding
+            challenges, opportunities, and feasibility.
+          </p>
+        </div>
+
+        <div class="service-card">
+          <i class="fas fa-code icon"></i>
+          <h3>Agent Development<br />& Prototyping</h3>
+          <p>
+            Once we have a list of opportunities that we're confident are a good
+            fit for AI, we'll move toward Agent Development. There will be a
+            rapid prototyping phase where we validate feasibility and solution
+            design. Within weeks, we can run Agent POCs and green-light
+            production ready agent development. Rapid development cycles are
+            critical with AI in order to keep up with the pace of innovation in
+            the industry.
+          </p>
+        </div>
+
+        <div class="service-card">
+          <i class="fas fa-brain icon"></i>
+          <h3>Model Selection & Optimization</h3>
+          <p>
+            The foundation model you select is an agent's brain. Agents can be
+            trained, but starting with the right model is essential for
+            performance and cost optimization. You don't need to hire a doctor
+            to wash your car, don't use an advanced model to perform a task that
+            a basic model can do well.
+          </p>
+        </div>
+
+        <div class="service-card">
+          <i class="fas fa-rocket icon"></i>
+          <h3>Agent Deployment & Integration</h3>
+          <p>
+            Successful deployments require proper integration with existing data
+            infrastructure, authentication, and positive user experiences. We
+            will ensure you not only have the right agents for the job, and that
+            they are properly integrated with your existing tech stack to set
+            your team up for success.
+          </p>
+        </div>
+
+        <div class="service-card">
+          <i class="fas fa-chart-line icon"></i>
+          <h3>Agent Assessment, Management & Support</h3>
+          <p>
+            Post-activation, we closely monitor agent performance to ensure it
+            remains optimized for the job. Keeping a close eye on performance
+            allows us to make the necessary adjustments to keep your agents
+            secure, efficient, and effective over time.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+      <h2>Contact Us</h2>
+
+      <div class="contact-container">
+        <!-- Team Section -->
+        <div class="team-section">
+          <h3>Meet Our Team</h3>
+
+          <div class="team-member">
+            <img src="assets/images/dave-peck.jpg" alt="Dave Peck" />
+            <div class="team-member-info">
+              <h4>Dave Peck</h4>
+              <p class="title">Managing Partner</p>
+              <a href="mailto:dave@getcarmen.ai" class="email"
+                >dave@getcarmen.ai</a
+              >
+              <div class="social-links">
+                <a
+                  href="https://davepeck.org/"
+                  title="Personal Website"
+                  aria-label="Dave's Website"
+                  ><i class="fas fa-globe"></i
+                ></a>
+                <a
+                  href="https://github.com/davepeck"
+                  title="GitHub"
+                  aria-label="Dave's GitHub"
+                  ><i class="fab fa-github"></i
+                ></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="team-member">
+            <img
+              src="assets/images/graham-thompson.jpg"
+              alt="Graham Thompson"
+            />
+            <div class="team-member-info">
+              <h4>Graham Thompson</h4>
+              <p class="title">Managing Partner</p>
+              <a href="mailto:graham@getcarmen.ai" class="email"
+                >graham@getcarmen.ai</a
+              >
+              <div class="social-links">
+                <a
+                  href="https://www.linkedin.com/in/graham-w-thompson"
+                  title="LinkedIn"
+                  aria-label="Graham's LinkedIn"
+                  ><i class="fab fa-linkedin"></i
+                ></a>
+                <a
+                  href="https://github.com/grahamthompson"
+                  title="GitHub"
+                  aria-label="Graham's GitHub"
+                  ><i class="fab fa-github"></i
+                ></a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="contact-form">
+          <h3>Get In Touch</h3>
+          <form action="https://formspree.io/f/mvgwdbek" method="POST">
+            <div class="form-group">
+              <label for="name">Name *</label>
+              <input type="text" id="name" name="name" required />
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email *</label>
+              <input type="email" id="email" name="email" required />
+            </div>
+
+            <div class="form-group">
+              <label for="company">Company</label>
+              <input type="text" id="company" name="company" />
+            </div>
+
+            <div class="form-group">
+              <label for="message"
+                >What led you to our site? Do you have a project in mind or are
+                you generally curious about how you can better leverage AI in
+                your business? *</label
+              >
+              <textarea id="message" name="message" required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="timeline">What's your timeline? *</label>
+              <select id="timeline" name="timeline" required>
+                <option value="">Select an option...</option>
+                <option value="exploring">
+                  Just exploring what's out there
+                </option>
+                <option value="know-what-we-want">
+                  We know what we're looking for
+                </option>
+                <option value="urgent">We need something yesterday!</option>
+              </select>
+            </div>
+
+            <button type="submit" class="submit-btn">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>

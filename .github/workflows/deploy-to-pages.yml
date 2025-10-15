@@ -33,8 +33,10 @@ jobs:
           node-version: "24"
       - name: Install node dependencies
         run: npm install
-      - name: Build static site
-        run: npm run build
+      # - name: Build static site
+      #   run: npm run build
+      - name: Use Grahams Site
+        run: cp -r grahams_site/* dist/
       - name: Upload artifact to pages
         uses: actions/upload-pages-artifact@v3
         with:
