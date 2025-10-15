@@ -1,17 +1,21 @@
 ---
+import AsciiBackground from "../components/AsciiBackground.astro";
 import Content from "../components/Content.astro";
 ---
 
-<Content>
-  <section class="max-w-3xl mx-auto relative z-30 bg-transparent">
-    <h1
-      class="font-display text-carmen-red text-5xl sm:text-7xl font-medium tracking-tight text-balance leading-none"
-    >
-      Supercharge your team with our custom AI solutions.
-    </h1>
-    <p class="mt-6 text-2xl text-neutral-700 leading-normal">
-      No magic, no hype: we build and deploy AI that amplifies the impact of
-      your top performers.
-    </p>
-  </section>
-</Content>
+<div class="relative w-full py-8">
+  <AsciiBackground />
+  <Content>
+    <section class="max-w-3xl mx-auto relative z-30 bg-transparent">
+      <h1
+        class="font-display text-carmen-red text-5xl sm:text-7xl font-medium tracking-tight text-balance leading-none"
+      >
+        Supercharge your team with our custom AI solutions.
+      </h1>
+      <p class="mt-6 text-2xl text-neutral-700 leading-normal">
+        No magic, no hype: we build and deploy AI that amplifies the impact of
+        your top performers.
+      </p>
+    </section>
+  </Content>
+</div>

@@ -2,7 +2,10 @@
 // Draw a 3D trefoil knot using ASCII characters
 ---
 
-<div id="ascii-canvas" class="fixed inset-0 z-30 ascii-background bg-white">
+<div
+  id="ascii-canvas"
+  class="absolute inset-0 z-30 ascii-background bg-white opacity-70"
+>
 </div>
 
 <script>
@@ -17,6 +20,8 @@
     perspective: number;
     width: number;
     height: number;
+    knotPoints: Array<{ x: number; y: number; z: number }>;
+    knotSamples: number;
 
     constructor(container: HTMLElement) {
       this.container = container;
@@ -44,6 +49,14 @@
       this.knotRadius = 1.5; // Radius of the tube around the knot
       this.scale = 15; // Scale factor for the knot
       this.perspective = 400; // Perspective distance
+
+      // Pre-compute knot points
+      this.knotSamples = 100;
+      this.knotPoints = [];
+      for (let i = 0; i < this.knotSamples; i++) {
+        const t = (i / this.knotSamples) * Math.PI * 2;
+        this.knotPoints.push(this.trefoilKnot(t));
+      }
 
       this.setupResize();
       this.animate();
@@ -112,43 +125,63 @@
       };
     }
 
-    // Calculate distance from a point to the knot surface
+    // Calculate distance from a point to the knot surface (optimized)
     distanceToKnot(px: number, py: number, pz: number) {
       let minDist = Infinity;
-      const samples = 200; // Number of samples along the knot
 
-      for (let i = 0; i < samples; i++) {
-        const t = (i / samples) * Math.PI * 2;
-        const knot = this.trefoilKnot(t);
+      // Pre-compute rotation matrices
+      const cosX = Math.cos(this.time * 0.5);
+      const sinX = Math.sin(this.time * 0.5);
+      const cosY = Math.cos(this.time * 0.7);
+      const sinY = Math.sin(this.time * 0.7);
+      const cosZ = Math.cos(this.time * 0.3);
+      const sinZ = Math.sin(this.time * 0.3);
 
-        // Apply rotations
-        let rotated = this.rotateX(knot, this.time * 0.5);
-        rotated = this.rotateY(rotated, this.time * 0.7);
-        rotated = this.rotateZ(rotated, this.time * 0.3);
+      for (let i = 0; i < this.knotSamples; i++) {
+        const knot = this.knotPoints[i];
+
+        // Combined rotation (X, then Y, then Z) - inlined for speed
+        // Rotate X
+        let x = knot.x;
+        let y = knot.y * cosX - knot.z * sinX;
+        let z = knot.y * sinX + knot.z * cosX;
+
+        // Rotate Y
+        const tempX = x * cosY + z * sinY;
+        z = -x * sinY + z * cosY;
+        x = tempX;
+
+        // Rotate Z
+        const finalX = x * cosZ - y * sinZ;
+        const finalY = x * sinZ + y * cosZ;
 
         // Scale
-        rotated.x *= this.scale;
-        rotated.y *= this.scale;
-        rotated.z *= this.scale;
+        const scaledX = finalX * this.scale;
+        const scaledY = finalY * this.scale;
+        const scaledZ = z * this.scale;
 
         // Calculate distance
-        const dx = px - rotated.x;
-        const dy = py - rotated.y;
-        const dz = pz - rotated.z;
-        const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        const dx = px - scaledX;
+        const dy = py - scaledY;
+        const dz = pz - scaledZ;
+        const dist = dx * dx + dy * dy + dz * dz; // Use squared distance to avoid sqrt
 
-        minDist = Math.min(minDist, dist);
+        if (dist < minDist) {
+          minDist = dist;
+        }
       }
 
-      return minDist;
+      return Math.sqrt(minDist);
     }
 
     // Render the knot
     render() {
       if (!this.width || !this.height) return;
 
-      const buffer = [];
+      const buffer: string[] = [];
       const aspectRatio = this.width / this.height;
+      const knotRadiusScaled = this.knotRadius * this.scale;
+      const knotRadiusScaledSq = knotRadiusScaled * knotRadiusScaled;
 
       for (let y = 0; y < this.height; y++) {
         let row = "";
@@ -157,24 +190,27 @@
           const worldX = (x / this.width - 0.5) * 60 * aspectRatio;
           const worldY = (y / this.height - 0.5) * 60;
 
-          // Ray marching from camera
+          // Simplified ray marching - fewer steps
           let brightness = 0;
-          const raySteps = 30;
+          const raySteps = 15; // Reduced from 30
 
-          for (let depth = -50; depth < 50; depth += 100 / raySteps) {
+          for (let step = 0; step < raySteps; step++) {
+            const depth = -50 + (step * 100) / raySteps;
             const dist = this.distanceToKnot(worldX, worldY, depth);
+            const distSq = dist * dist;
 
             // If we're close to the surface, calculate brightness
-            if (dist < this.knotRadius * this.scale) {
+            if (distSq < knotRadiusScaledSq) {
               // Distance from surface (0 = on surface, 1 = at edge of tube)
-              const surfaceDist = dist / (this.knotRadius * this.scale);
+              const surfaceDist = dist / knotRadiusScaled;
 
               // Calculate brightness based on distance and depth
               const depthFactor = 1 - (depth + 50) / 100;
-              brightness = Math.max(
-                brightness,
-                (1 - surfaceDist) * depthFactor
-              );
+              const thisBrightness = (1 - surfaceDist) * depthFactor;
+
+              if (thisBrightness > brightness) {
+                brightness = thisBrightness;
+              }
             }
           }
 
@@ -182,11 +218,10 @@
           const charIndex = Math.floor(
             brightness * (this.asciiChars.length - 1)
           );
-          const char =
+          row +=
             this.asciiChars[
               Math.max(0, Math.min(charIndex, this.asciiChars.length - 1))
             ];
-          row += char;
         }
         buffer.push(row);
       }
