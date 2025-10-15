@@ -1,10 +1,13 @@
 ---
 import Hero from "../sections/Hero.astro";
 import People from "../sections/People.astro";
-import Layout from "../layouts/Layout.astro";
+import Layout from "./Layout.astro";
 ---
 
 <Layout>
   <Hero />
+  <div class="prose prose-xl prose-h2:font-display">
+    <slot />
+  </div>
   <People />
 </Layout>
