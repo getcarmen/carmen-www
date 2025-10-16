@@ -1,47 +1,39 @@
 ---
+import { getCollection } from "astro:content";
 import Layout from "../layouts/Layout.astro";
-import Hero from "./homepage/Hero.astro";
-import People from "./homepage/People.astro";
+import Hero from "../sections/homepage/Hero.astro";
 import Prose from "../components/Prose.astro";
 import Content from "../components/Content.astro";
 import Cards from "../components/Cards.astro";
 import Card from "../components/Card.astro";
 
-import HowWeWork from "./homepage/how_we_work.md";
+import HowWeWork from "../sections/homepage/how_we_work.md";
 
-import Card01, {
-  frontmatter as card01frontmatter,
-} from "./homepage/card01_opportunity_research.md";
-import Card02, {
-  frontmatter as card02frontmatter,
-} from "./homepage/card02_agent_development.md";
-
-const cards = [
-  {
-    content: Card01,
-    frontmatter: card01frontmatter,
-  },
-  {
-    content: Card02,
-    frontmatter: card02frontmatter,
-  },
-];
+const cards = await getCollection("cards");
 ---
 
 <Layout>
   <Hero />
-  <Prose>
-    <HowWeWork />
-  </Prose>
   <Content>
-    <Cards>
-      {
-        cards.map(({ content: CardContent, frontmatter }) => (
-          <Card {...frontmatter}>
-            <CardContent />
-          </Card>
-        ))
-      }
-    </Cards>
+    <Prose>
+      <HowWeWork />
+    </Prose>
+  </Content>
+  <Content borders className="bg-neutral-100">
+    <Prose>
+      <h2>What we offer</h2>
+      <Cards>
+        {
+          cards.map(async (card) => {
+            const { Content: CardContent } = await card.render();
+            return (
+              <Card {...card.data}>
+                <CardContent />
+              </Card>
+            );
+          })
+        }
+      </Cards>
+    </Prose>
   </Content>
 </Layout>

@@ -1,13 +1,15 @@
 ---
 // Use this container class when you want to apply prose (long-form text)
 // styles to content on the page.
-import Content from "./Content.astro";
+import clsx from "clsx";
+const { className = "" } = Astro.props;
 ---
 
-<Content>
-  <div
-    class="bg-blue-50 text-pretty prose prose-lg sm:prose-xl font-sans prose-h2:font-display prose-h3:font-display"
-  >
-    <slot />
-  </div>
-</Content>
+<div
+  class={clsx(
+    "text-pretty prose prose-lg sm:prose-xl font-sans prose-h2:font-display prose-h3:font-display",
+    className
+  )}
+>
+  <slot />
+</div>
