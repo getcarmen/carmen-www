@@ -67,7 +67,7 @@
 
       // Rendering parameters
       this.knotRadius = 0.5; // Radius of the tube around the knot - smaller for clearer shape
-      this.scale = 17.5; // Scale factor for the knot - larger to see it better
+      this.scale = 17.5; // Base scale factor - will be adjusted based on viewport
 
       // Pre-compute knot points
       this.knotSamples = 150; // More samples for better detail
@@ -97,7 +97,19 @@
         this.height = Math.floor(
           rect.height / (this.heightMult * this.fontFactor)
         ); // Approximate char height
-        console.log(`Resized to ${this.width}x${this.height}`);
+
+        // Adjust scale based on viewport width
+        const baseWidth = 468;
+        const baseScale = 17.5;
+        this.scale = baseScale * Math.min(1.0, rect.width / baseWidth);
+
+        console.log(
+          `Resized to ${this.width}x${this.height}, scale=${this.scale.toFixed(2)}`
+        );
+
+        // Re-compute frames with new scale
+        this.precomputeAllFrames();
+
         this.render();
       };
 
