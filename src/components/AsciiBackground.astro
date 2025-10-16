@@ -5,7 +5,7 @@
 
 <div
   id="ascii-canvas"
-  class="absolute inset-0 overflow-hidden opacity-30 select-none"
+  class="absolute inset-0 overflow-hidden opacity-50 select-none"
 >
 </div>
 
@@ -13,6 +13,9 @@
   class TrefoilKnotRenderer {
     container: HTMLElement;
     canvas: HTMLPreElement;
+    scaleFactor: number;
+    widthFactor: number;
+    heightFactor: number;
     asciiChars: string;
     time: number;
     animationSpeed: number;
@@ -29,14 +32,22 @@
     currentFrame: number;
     lastFrameTime: number;
 
-    constructor(container: HTMLElement) {
+    constructor(
+      container: HTMLElement,
+      scaleFactor: number = 0.75,
+      widthFactor: number = 6.0,
+      heightFactor: number = 9.0
+    ) {
       this.container = container;
+      this.scaleFactor = scaleFactor;
+      this.widthFactor = widthFactor;
+      this.heightFactor = heightFactor;
       this.canvas = document.createElement("pre");
       this.canvas.style.margin = "0";
       this.canvas.style.padding = "0";
       this.canvas.style.lineHeight = "1";
       this.canvas.style.fontFamily = "monospace";
-      this.canvas.style.fontSize = "10px";
+      this.canvas.style.fontSize = `${10.0 * scaleFactor}px`;
       this.canvas.style.overflow = "hidden";
       this.canvas.style.whiteSpace = "pre";
       this.canvas.style.color = "#888";
@@ -80,8 +91,12 @@
     setupResize() {
       const resize = () => {
         const rect = this.container.getBoundingClientRect();
-        this.width = Math.floor(rect.width / 6); // Approximate char width
-        this.height = Math.floor(rect.height / 10); // Approximate char height
+        this.width = Math.floor(
+          rect.width / (this.widthFactor * this.scaleFactor)
+        ); // Approximate char width
+        this.height = Math.floor(
+          rect.height / (this.heightFactor * this.scaleFactor)
+        ); // Approximate char height
         console.log(`Resized to ${this.width}x${this.height}`);
         this.render();
       };
@@ -212,7 +227,8 @@
       this.updateTransformedPoints();
 
       const buffer: string[] = [];
-      const aspectRatio = this.width / this.height;
+      const aspectRatio =
+        (this.width / this.height) * (this.widthFactor / this.heightFactor);
       const knotRadiusScaled = this.knotRadius * this.scale;
       const knotRadiusScaledSq = knotRadiusScaled * knotRadiusScaled;
 

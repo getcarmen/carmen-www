@@ -2,12 +2,15 @@
 import Hero from "../sections/Hero.astro";
 import People from "../sections/People.astro";
 import Layout from "./Layout.astro";
+import Content from "../components/Content.astro";
 ---
 
 <Layout>
   <Hero />
-  <div class="prose prose-xl prose-h2:font-display">
-    <slot />
-  </div>
+  <Content>
+    <div class="prose prose-xl prose-h2:font-display">
+      <slot />
+    </div>
+  </Content>
   <People />
 </Layout>
