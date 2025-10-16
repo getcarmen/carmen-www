@@ -27,6 +27,7 @@
     precomputedFrames: Array<Array<{ x: number; y: number; z: number }>>;
     totalFrames: number;
     currentFrame: number;
+    lastFrameTime: number;
 
     constructor(container: HTMLElement) {
       this.container = container;
@@ -48,9 +49,10 @@
 
       // Animation parameters
       this.time = 0;
-      this.animationSpeed = 1; // Now in frames, not time units
+      this.animationSpeed = 15; // Frames per second - consistent across all devices
       this.currentFrame = 0;
-      this.totalFrames = 300; // Pre-compute 300 frames for smooth animation
+      this.totalFrames = 4500; // Pre-compute 300 frames for smooth animation
+      this.lastFrameTime = 0;
 
       // Rendering parameters
       this.knotRadius = 0.5; // Radius of the tube around the knot - smaller for clearer shape
@@ -64,8 +66,9 @@
         this.knotPoints.push(this.trefoilKnot(t));
       }
 
-      // Initialize transformed points array
+      // Initialize arrays
       this.transformedKnotPoints = new Array(this.knotSamples);
+      this.precomputedFrames = [];
 
       // Pre-compute all animation frames
       this.precomputeAllFrames();
@@ -79,6 +82,7 @@
         const rect = this.container.getBoundingClientRect();
         this.width = Math.floor(rect.width / 6); // Approximate char width
         this.height = Math.floor(rect.height / 10); // Approximate char height
+        console.log(`Resized to ${this.width}x${this.height}`);
         this.render();
       };
 
@@ -102,7 +106,7 @@
         // Each rotation rate is chosen so it completes an integer number of cycles
         // over totalFrames, ensuring smooth looping
         const t = (frame / this.totalFrames) * Math.PI * 2;
-        
+
         // These multipliers ensure smooth loops:
         // 3 cycles, 5 cycles, 2 cycles respectively over the full animation
         const cosX = Math.cos(t * 3);
@@ -146,7 +150,9 @@
 
     // Update transformed points from pre-computed frame
     updateTransformedPoints() {
-      this.transformedKnotPoints = this.precomputedFrames[this.currentFrame];
+      // Use floor to get integer frame index for lookup
+      const frameIndex = Math.floor(this.currentFrame) % this.totalFrames;
+      this.transformedKnotPoints = this.precomputedFrames[frameIndex];
     }
 
     // Calculate distance from a point to the knot surface (optimized)
@@ -257,25 +263,25 @@
     }
 
     animate() {
+      const currentTime = performance.now();
+      const deltaTime = currentTime - this.lastFrameTime;
+
+      // Calculate how many frames to advance based on elapsed time
+      // This ensures consistent speed regardless of refresh rate
+      const framesPerSecond = this.animationSpeed;
+      const frameIncrement = (deltaTime / 1000) * framesPerSecond;
+
       this.currentFrame =
-        (this.currentFrame + this.animationSpeed) % this.totalFrames;
+        (this.currentFrame + frameIncrement) % this.totalFrames;
+      this.lastFrameTime = currentTime;
+
       this.render();
       requestAnimationFrame(() => this.animate());
     }
   }
 
-  // Initialize when DOM is ready
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => {
-      const container = document.getElementById("ascii-canvas");
-      if (container) {
-        new TrefoilKnotRenderer(container);
-      }
-    });
-  } else {
-    const container = document.getElementById("ascii-canvas");
-    if (container) {
-      new TrefoilKnotRenderer(container);
-    }
+  const container = document.getElementById("ascii-canvas");
+  if (container) {
+    new TrefoilKnotRenderer(container);
   }
 </script>
