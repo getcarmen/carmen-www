@@ -13,9 +13,9 @@
   class TrefoilKnotRenderer {
     container: HTMLElement;
     canvas: HTMLPreElement;
-    scaleFactor: number;
-    widthFactor: number;
-    heightFactor: number;
+    fontFactor: number;
+    widthMult: number;
+    heightMult: number;
     asciiChars: string;
     time: number;
     animationSpeed: number;
@@ -34,20 +34,20 @@
 
     constructor(
       container: HTMLElement,
-      scaleFactor: number = 0.75,
-      widthFactor: number = 6.0,
-      heightFactor: number = 9.0
+      fontFactor: number = 0.75,
+      widthMult: number = 6.0,
+      heightMult: number = 9.0
     ) {
       this.container = container;
-      this.scaleFactor = scaleFactor;
-      this.widthFactor = widthFactor;
-      this.heightFactor = heightFactor;
+      this.fontFactor = fontFactor;
+      this.widthMult = widthMult;
+      this.heightMult = heightMult;
       this.canvas = document.createElement("pre");
       this.canvas.style.margin = "0";
       this.canvas.style.padding = "0";
       this.canvas.style.lineHeight = "1";
       this.canvas.style.fontFamily = "monospace";
-      this.canvas.style.fontSize = `${10.0 * scaleFactor}px`;
+      this.canvas.style.fontSize = `${10.0 * fontFactor}px`;
       this.canvas.style.overflow = "hidden";
       this.canvas.style.whiteSpace = "pre";
       this.canvas.style.color = "#888";
@@ -67,7 +67,7 @@
 
       // Rendering parameters
       this.knotRadius = 0.5; // Radius of the tube around the knot - smaller for clearer shape
-      this.scale = 20; // Scale factor for the knot - larger to see it better
+      this.scale = 17.5; // Scale factor for the knot - larger to see it better
 
       // Pre-compute knot points
       this.knotSamples = 150; // More samples for better detail
@@ -92,10 +92,10 @@
       const resize = () => {
         const rect = this.container.getBoundingClientRect();
         this.width = Math.floor(
-          rect.width / (this.widthFactor * this.scaleFactor)
+          rect.width / (this.widthMult * this.fontFactor)
         ); // Approximate char width
         this.height = Math.floor(
-          rect.height / (this.heightFactor * this.scaleFactor)
+          rect.height / (this.heightMult * this.fontFactor)
         ); // Approximate char height
         console.log(`Resized to ${this.width}x${this.height}`);
         this.render();
@@ -228,7 +228,7 @@
 
       const buffer: string[] = [];
       const aspectRatio =
-        (this.width / this.height) * (this.widthFactor / this.heightFactor);
+        (this.width / this.height) * (this.widthMult / this.heightMult);
       const knotRadiusScaled = this.knotRadius * this.scale;
       const knotRadiusScaledSq = knotRadiusScaled * knotRadiusScaled;
 
