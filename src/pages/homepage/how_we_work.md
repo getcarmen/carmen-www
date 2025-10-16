@@ -1,5 +1,4 @@
 ---
-layout: ../layouts/Homepage.astro
 ---
 
 ## How we work
