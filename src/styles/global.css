@@ -18,7 +18,7 @@
 @keyframes fade-in-up {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -27,10 +27,10 @@
 }
 
 .animate-fade-in-up {
-  animation: fade-in-up 0.8s ease-out forwards;
+  animation: fade-in-up 1s ease-out forwards;
 }
 
 .animation-delay-200 {
-  animation-delay: 0.2s;
+  animation-delay: 0.5s;
   opacity: 0;
 }
