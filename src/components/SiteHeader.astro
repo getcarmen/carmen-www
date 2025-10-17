@@ -1,5 +1,13 @@
 ---
 import TrefoilLogo from "./TrefoilLogo.astro";
+// consider locking the header to the top of the viewport
+// "z-50 fixed top-0 left-0 bg-neutral-100" added to class
+
+const links = [
+  { href: "#how-we-work", text: "How we work" },
+  { href: "#what-we-offer", text: "What we offer" },
+  { href: "#contact-us", text: "Contact us" },
+];
 ---
 
 <header class="w-full border-b border-neutral-200 py-4 px-3 sm:px-6">
@@ -10,23 +18,21 @@ import TrefoilLogo from "./TrefoilLogo.astro";
       ><TrefoilLogo />Carmen AI</a
     >
     <div class="text-sm flex items-center gap-3">
-      <a
-        href="#how-we-work"
-        class="transition-colors hover:text-carmen-red cursor-pointer"
-        >How we work</a
-      >
-      <span class="text-neutral-300">|</span>
-      <a
-        href="#what-we-offer"
-        class="transition-colors hover:text-carmen-red cursor-pointer"
-        >What we offer</a
-      >
-      <span class="text-neutral-300">|</span>
-      <a
-        href="#contact-us"
-        class="transition-colors hover:text-carmen-red cursor-pointer"
-        >Contact us</a
-      >
+      {
+        links.map((link, index) => (
+          <>
+            <a
+              href={link.href}
+              class="transition-colors hover:text-carmen-red cursor-pointer"
+            >
+              {link.text}
+            </a>
+            {index < links.length - 1 && (
+              <span class="text-neutral-300">|</span>
+            )}
+          </>
+        ))
+      }
     </div>
   </nav>
 </header>
