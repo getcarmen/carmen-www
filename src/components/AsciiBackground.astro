@@ -308,8 +308,18 @@
     }
   }
 
-  const container = document.getElementById("ascii-canvas");
-  if (container) {
-    new TrefoilKnotRenderer(container);
+  function initRenderer() {
+    const container = document.getElementById("ascii-canvas");
+    if (container) {
+      new TrefoilKnotRenderer(container);
+    }
+  }
+
+  // Ensure the DOM is loaded before initializing
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initRenderer);
+  } else {
+    // DOM is already loaded
+    initRenderer();
   }
 </script>
