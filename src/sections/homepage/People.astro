@@ -7,61 +7,59 @@ const people: {
   name: string;
   title: string;
   imageUrl: string;
-  linkedinUrl?: string;
   email?: string;
+  linkedinUrl?: string;
   websiteUrl?: string;
+  githubUrl?: string;
 }[] = [
+  {
+    name: "Dave Peck",
+    title: "Managing Partner",
+    imageUrl: "/img/dave_peck.jpg",
+    email: "dave@getcarmen.ai",
+    websiteUrl: "https://davepeck.org",
+    githubUrl: "https://github.com/davepeck",
+  },
   {
     name: "Graham Thompson",
     title: "Managing Partner",
     imageUrl: "/img/graham_thompson.jpg",
     linkedinUrl: "https://www.linkedin.com/in/graham-w-thompson",
-    email: "mailto:Graham Thompson <graham@getcarmen.ai>",
-  },
-  {
-    name: "Dave Peck",
-    title: "Managing Partner",
-    imageUrl: "/img/dave_peck.jpg",
-    email: "mailto:Dave Peck <dave@getcarmen.ai>",
-    websiteUrl: "https://davepeck.org",
+    email: "graham@getcarmen.ai",
+    githubUrl: "https://github.com/grahamthompson",
   },
 ];
 ---
 
 <!-- About us -->
-<ul
-  role="list"
-  class="grid gap-x-8 gap-y-12 sm:grid-cols-2 sm:gap-y-16 xl:col-span-2"
->
+<ul role="list" class="flex flex-col list-none gap-y-16 py-8">
   {
     people.map((person) => (
       <li>
-        <div class="flex items-center gap-x-6">
+        <div class="flex flex-row justify-left items-center gap-x-6">
           <img
             alt=""
             src={person.imageUrl}
-            class="size-20 rounded-full outline-1 -outline-offset-1 outline-white/10"
+            class="size-20 rounded-full outline-1 outline-neutral-500"
           />
-          <div>
-            <h3 class="text-base/7 font-semibold tracking-tight text-white">
+          <div class="flex flex-col justify-between gap-y-2 text-base">
+            <h4 class="text-xl font-medium font-display tracking-tight leading-[1em]">
               {person.name}
-            </h3>
-            {person?.role && (
-              <p class="text-sm/6 font-semibold text-carmen-red brightness-150">
-                {person.role}
-              </p>
+            </h4>
+            {person?.title && (
+              <p class="font-sans text-neutral-900">{person.title}</p>
             )}
-            <div class="flex gap-3 text-neutral-400 mt-1">
-              {person?.email && (
-                <a
-                  href={person?.email}
-                  target="_blank"
-                  aria-label="Email"
-                  class="hover:text-carmen-red transition-colors"
-                >
-                  <MailIcon />
-                </a>
-              )}
+            {person?.email && (
+              <a
+                href={person?.email}
+                target="_blank"
+                aria-label="Email"
+                class="hover:text-carmen-red transition-colors text-sm"
+              >
+                {person?.email}
+              </a>
+            )}
+            <div class="flex gap-x-3 text-lg">
               {person?.linkedinUrl && (
                 <a
                   href={person?.linkedinUrl}
@@ -69,7 +67,7 @@ const people: {
                   aria-label="LinkedIn"
                   class="hover:text-carmen-red transition-colors"
                 >
-                  <LinkedIcon />
+                  <i class="fa-brands fa-linkedin" />
                 </a>
               )}
               {person?.websiteUrl && (
@@ -79,7 +77,17 @@ const people: {
                   aria-label="Website"
                   class="hover:text-carmen-red transition-colors"
                 >
-                  <WebIcon />
+                  <i class="fas fa-square-rss" />
+                </a>
+              )}
+              {person?.githubUrl && (
+                <a
+                  href={person?.githubUrl}
+                  target="_blank"
+                  aria-label="GitHub"
+                  class="hover:text-carmen-red transition-colors"
+                >
+                  <i class="fa-brands fa-github" />
                 </a>
               )}
             </div>

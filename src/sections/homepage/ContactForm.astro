@@ -4,12 +4,135 @@ import People from "./People.astro";
 ---
 
 <Prose>
-  <h2>Contact Us</h2>
-  <div class="flex">
+  <h2 id="contact-us" class="!mb-4">Contact Us</h2>
+  <div class="flex flex-col md:flex-row">
     <div class="flex-1">
       <h3>Meet Our Team</h3>
-      <People />
+      <div class="not-prose">
+        <People />
+      </div>
     </div>
-    <div class="flex-1"><h3>Get In Touch</h3></div>
+    <div class="flex-1">
+      <h3>Get In Touch</h3>
+      <form
+        class="flex flex-col gap-y-8 w-full pt-6 pr-4"
+        action="https://formspree.io/f/mvgwdbek"
+        method="POST"
+      >
+        <!-- name -->
+        <div class="w-full">
+          <label for="name" class="block text-base/6 font-medium text-gray-900"
+            >Name *</label
+          >
+          <div class="mt-2">
+            <input
+              id="name"
+              type="text"
+              name="name"
+              required
+              class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600/50 sm:text-sm/6"
+            />
+          </div>
+        </div>
+
+        <!-- email -->
+        <div class="w-full">
+          <label for="email" class="block text-base/6 font-medium text-gray-900"
+            >Email *</label
+          >
+          <div class="mt-2">
+            <input
+              id="email"
+              type="email"
+              name="email"
+              required
+              class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600/50 sm:text-sm/6"
+            />
+          </div>
+        </div>
+
+        <!-- company -->
+        <div class="w-full">
+          <label
+            for="company"
+            class="block text-base/6 font-medium text-gray-900">Company</label
+          >
+          <div class="mt-2">
+            <input
+              id="company"
+              type="text"
+              name="company"
+              required
+              class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600/50 sm:text-sm/6"
+            />
+          </div>
+        </div>
+
+        <!-- how did you get here -->
+        <div class="w-full">
+          <label
+            for="message"
+            class="block text-base/6 font-medium text-gray-900"
+            >What led you to our site? Do you have a project in mind, or are you
+            generally cirious about how you can better leverage AI in your
+            business? *</label
+          >
+          <div class="mt-2">
+            <textarea
+              id="message"
+              name="message"
+              rows="6"
+              required
+              class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600/50 sm:text-sm/6"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- timeline -->
+        <div class="w-full">
+          <label
+            for="timeline"
+            class="block text-base/6 font-medium text-gray-900"
+            >What's your timeline? *</label
+          >
+          <div class="mt-2 grid grid-cols-1">
+            <select
+              id="timeline"
+              name="timeline"
+              required
+              class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-600 sm:text-sm/6"
+            >
+              <option value="">Select an option...</option>
+              <option value="exploring">
+                Just exploring what's out there
+              </option>
+              <option value="know-what-we-want">
+                We know what we're looking for
+              </option>
+              <option value="urgent">We need something yesterday!</option>
+            </select>
+            <svg
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              data-slot="icon"
+              aria-hidden="true"
+              class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+            >
+              <path
+                d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z"
+                clip-rule="evenodd"
+                fill-rule="evenodd"></path>
+            </svg>
+          </div>
+        </div>
+
+        <!-- submit button -->
+        <button
+          type="submit"
+          class="cursor-pointer inline-flex rounded-md px-4 py-1.5 text-sm sm:text-base font-semibold transition bg-carmen-red text-white hover:bg-carmen-red/80"
+          >Send us a message</button
+        >
+      </form>
+    </div>
   </div>
 </Prose>
