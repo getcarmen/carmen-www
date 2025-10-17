@@ -1,0 +1,95 @@
+---
+const people: {
+  name: string;
+  title: string;
+  imageUrl: string;
+  email?: string;
+  linkedinUrl?: string;
+  websiteUrl?: string;
+  githubUrl?: string;
+}[] = [
+  {
+    name: "Dave Peck",
+    title: "Managing Partner",
+    imageUrl: "/img/dave_peck.jpg",
+    email: "dave@getcarmen.ai",
+    websiteUrl: "https://davepeck.org",
+    githubUrl: "https://github.com/davepeck",
+  },
+  {
+    name: "Graham Thompson",
+    title: "Managing Partner",
+    imageUrl: "/img/graham_thompson.jpg",
+    linkedinUrl: "https://www.linkedin.com/in/graham-w-thompson",
+    email: "graham@getcarmen.ai",
+    githubUrl: "https://github.com/grahamthompson",
+  },
+];
+---
+
+<!-- About us -->
+<ul role="list" class="flex flex-col list-none gap-y-16 py-8">
+  {
+    people.map((person) => (
+      <li>
+        <div class="flex flex-row justify-left items-center gap-x-6">
+          <img
+            alt=""
+            src={person.imageUrl}
+            class="size-20 rounded-full outline-1 outline-neutral-500"
+          />
+          <div class="flex flex-col justify-between gap-y-2 text-base">
+            <h4 class="text-xl font-medium font-display tracking-tight leading-[1em] text-black">
+              {person.name}
+            </h4>
+            {person?.title && (
+              <p class="font-sans text-neutral-900">{person.title}</p>
+            )}
+            {person?.email && (
+              <a
+                href={person?.email}
+                target="_blank"
+                aria-label="Email"
+                class="hover:text-carmen-red transition-colors text-sm"
+              >
+                {person?.email}
+              </a>
+            )}
+            <div class="flex gap-x-3 text-lg">
+              {person?.linkedinUrl && (
+                <a
+                  href={person?.linkedinUrl}
+                  target="_blank"
+                  aria-label="LinkedIn"
+                  class="hover:text-carmen-red transition-colors"
+                >
+                  <i class="fa-brands fa-linkedin" />
+                </a>
+              )}
+              {person?.websiteUrl && (
+                <a
+                  href={person?.websiteUrl}
+                  target="_blank"
+                  aria-label="Website"
+                  class="hover:text-carmen-red transition-colors"
+                >
+                  <i class="fas fa-square-rss" />
+                </a>
+              )}
+              {person?.githubUrl && (
+                <a
+                  href={person?.githubUrl}
+                  target="_blank"
+                  aria-label="GitHub"
+                  class="hover:text-carmen-red transition-colors"
+                >
+                  <i class="fa-brands fa-github" />
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      </li>
+    ))
+  }
+</ul>

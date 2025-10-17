@@ -1,0 +1,15 @@
+---
+// A container component to wrap page content with consistent styling
+// and width/margin/padding settings.
+import clsx from "clsx";
+let { className = "", border = false } = Astro.props;
+if (border) {
+  className = clsx(className, "border-t border-neutral-300");
+}
+---
+
+<div class={clsx("w-full", className)}>
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-10 sm:py-20">
+    <slot />
+  </div>
+</div>

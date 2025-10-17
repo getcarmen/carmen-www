@@ -1,0 +1,207 @@
+---
+import clsx from "clsx";
+import TrefoilLogo from "./TrefoilLogo.astro";
+
+// change this to false if we don't want a fixed header. I dunno which we want.
+const fixedHeader = true;
+const links = [
+  { href: "#how-we-work", text: "How we work" },
+  { href: "#what-we-offer", text: "What we offer" },
+  { href: "#contact-us", text: "Contact us" },
+];
+---
+
+<header
+  class={clsx(
+    "w-full border-b border-neutral-200 py-4 px-3 sm:px-6",
+    fixedHeader && "z-50 fixed top-0 left-0 bg-neutral-100"
+  )}
+>
+  <nav class="flex items-center justify-between gap-4 text-lg sm:text-xl">
+    <a
+      href="/"
+      class="group font-display font-semibold flex-grow text-neutral-900 hover:text-carmen-red transition-colors duration-200 flex items-center gap-x-1"
+      ><TrefoilLogo />Carmen AI</a
+    >
+
+    <!-- Desktop navigation - hidden on mobile -->
+    <div class="hidden sm:flex text-sm items-center gap-3">
+      {
+        links.map((link, index) => (
+          <>
+            <a
+              href={link.href}
+              class="transition-colors hover:text-carmen-red cursor-pointer"
+            >
+              {link.text}
+            </a>
+            {index < links.length - 1 && (
+              <span class="text-neutral-300">|</span>
+            )}
+          </>
+        ))
+      }
+    </div>
+
+    <!-- Hamburger button - visible only on mobile -->
+    <button
+      id="hamburger-btn"
+      class="sm:hidden cursor-pointer w-6 h-6 flex flex-col items-center justify-center gap-1.5 hover:opacity-70 transition-opacity"
+      aria-label="Toggle menu"
+      aria-expanded="false"
+    >
+      <span
+        class="hamburger-line w-5 h-0.5 bg-neutral-800 transition-all duration-300"
+      ></span>
+      <span
+        class="hamburger-line w-5 h-0.5 bg-neutral-800 transition-all duration-300"
+      ></span>
+      <span
+        class="hamburger-line w-5 h-0.5 bg-neutral-800 transition-all duration-300"
+      ></span>
+    </button>
+  </nav>
+
+  <!-- Mobile menu overlay -->
+  <div
+    id="mobile-menu"
+    class="fixed inset-0 bg-neutral-900 bg-opacity-95 z-50 opacity-0 pointer-events-none transition-opacity duration-300"
+  >
+    <div class="flex flex-col items-center justify-center h-full gap-8 px-6">
+      {
+        links.map((link) => (
+          <a
+            href={link.href}
+            class="mobile-menu-link text-3xl font-display font-semibold text-white hover:text-carmen-red transition-colors duration-200 opacity-0 transform translate-y-4"
+          >
+            {link.text}
+          </a>
+        ))
+      }
+      <button
+        id="close-menu-btn"
+        class="mobile-menu-link mt-4 text-xl text-neutral-400 hover:text-white transition-colors opacity-0 transform translate-y-4"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+</header>
+{fixedHeader && (
+  <div class="h-[61px]"></div> <!-- Spacer div to offset fixed header -->
+) }
+
+<style is:global>
+  html {
+    scroll-behavior: smooth;
+    /* Add padding when scrolling to anchors to account for fixed header */
+    scroll-padding-top: 0; /* Default when no fixed header */
+  }
+
+  /* Hamburger animation when menu is open */
+  .hamburger-open .hamburger-line:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+  .hamburger-open .hamburger-line:nth-child(2) {
+    opacity: 0;
+  }
+  .hamburger-open .hamburger-line:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+  }
+
+  /* Mobile menu open state */
+  .mobile-menu-open {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  /* Staggered animation for menu links */
+  .mobile-menu-link {
+    transition:
+      opacity 0.3s ease-out,
+      transform 0.3s ease-out;
+  }
+  .mobile-menu-open .mobile-menu-link {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .mobile-menu-open .mobile-menu-link:nth-child(1) {
+    transition-delay: 0.1s;
+  }
+  .mobile-menu-open .mobile-menu-link:nth-child(2) {
+    transition-delay: 0.15s;
+  }
+  .mobile-menu-open .mobile-menu-link:nth-child(3) {
+    transition-delay: 0.2s;
+  }
+  .mobile-menu-open .mobile-menu-link:nth-child(4) {
+    transition-delay: 0.25s;
+  }
+</style>
+
+<script>
+  const hamburgerBtn = document.getElementById("hamburger-btn");
+  const mobileMenu = document.getElementById("mobile-menu");
+  const closeMobileMenuBtn = document.getElementById("close-menu-btn");
+  const mobileMenuLinks = document.querySelectorAll(".mobile-menu-link");
+
+  function openMenu() {
+    if (mobileMenu && hamburgerBtn) {
+      mobileMenu.classList.add("mobile-menu-open");
+      hamburgerBtn.classList.add("hamburger-open");
+      hamburgerBtn.setAttribute("aria-expanded", "true");
+      document.body.style.overflow = "hidden"; // Prevent background scrolling
+    }
+  }
+
+  function closeMenu() {
+    if (mobileMenu && hamburgerBtn) {
+      mobileMenu.classList.remove("mobile-menu-open");
+      hamburgerBtn.classList.remove("hamburger-open");
+      hamburgerBtn.setAttribute("aria-expanded", "false");
+      document.body.style.overflow = ""; // Restore scrolling
+    }
+  }
+
+  // Toggle menu on hamburger button click
+  hamburgerBtn?.addEventListener("click", () => {
+    if (mobileMenu?.classList.contains("mobile-menu-open")) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  });
+
+  // Close menu on close button click
+  closeMobileMenuBtn?.addEventListener("click", closeMenu);
+
+  // Close menu when clicking on a link
+  mobileMenuLinks.forEach((link) => {
+    link.addEventListener("click", closeMenu);
+  });
+
+  // Close menu when clicking outside (on the overlay)
+  mobileMenu?.addEventListener("click", (e) => {
+    if (e.target === mobileMenu) {
+      closeMenu();
+    }
+  });
+
+  // Close menu on Escape key
+  document.addEventListener("keydown", (e) => {
+    if (
+      e.key === "Escape" &&
+      mobileMenu?.classList.contains("mobile-menu-open")
+    ) {
+      closeMenu();
+    }
+  });
+</script>
+
+{fixedHeader && (
+  <style is:global>
+    html {
+      scroll-padding-top: 5rem;
+    }
+  </style>
+)}

@@ -1,0 +1,315 @@
+---
+// Draw a 3D trefoil knot using ASCII characters
+// (c) Dave Peck 2025
+---
+
+<div
+  id="ascii-canvas"
+  class="absolute inset-0 overflow-hidden opacity-50 select-none"
+>
+</div>
+
+<script>
+  class TrefoilKnotRenderer {
+    container: HTMLElement;
+    canvas: HTMLPreElement;
+    fontFactor: number;
+    widthMult: number;
+    heightMult: number;
+    asciiChars: string;
+    time: number;
+    animationSpeed: number;
+    knotRadius: number;
+    scale: number;
+    width: number;
+    height: number;
+    knotPoints: Array<{ x: number; y: number; z: number }>;
+    transformedKnotPoints: Array<{ x: number; y: number; z: number }>;
+    knotSamples: number;
+    // Pre-computed animation frames
+    precomputedFrames: Array<Array<{ x: number; y: number; z: number }>>;
+    totalFrames: number;
+    currentFrame: number;
+    lastFrameTime: number;
+
+    constructor(
+      container: HTMLElement,
+      fontFactor: number = 0.75,
+      widthMult: number = 6.0,
+      heightMult: number = 9.0
+    ) {
+      this.container = container;
+      this.fontFactor = fontFactor;
+      this.widthMult = widthMult;
+      this.heightMult = heightMult;
+      this.canvas = document.createElement("pre");
+      this.canvas.style.margin = "0";
+      this.canvas.style.padding = "0";
+      this.canvas.style.lineHeight = "1";
+      this.canvas.style.fontFamily = "monospace";
+      this.canvas.style.fontSize = `${10.0 * fontFactor}px`;
+      this.canvas.style.overflow = "hidden";
+      this.canvas.style.whiteSpace = "pre";
+      this.canvas.style.color = "#888";
+      this.container.appendChild(this.canvas);
+      this.width = 0;
+      this.height = 0;
+
+      // ASCII characters from darkest to brightest
+      this.asciiChars = " .,:-=+*#%@▒▓█";
+
+      // Animation parameters
+      this.time = 0;
+      this.animationSpeed = 15; // Frames per second - consistent across all devices
+      this.currentFrame = 0;
+      this.totalFrames = 4500; // Pre-compute 300 frames for smooth animation
+      this.lastFrameTime = 0;
+
+      // Rendering parameters
+      this.knotRadius = 0.5; // Radius of the tube around the knot - smaller for clearer shape
+      this.scale = 17.5; // Base scale factor - will be adjusted based on viewport
+
+      // Pre-compute knot points
+      this.knotSamples = 150; // More samples for better detail
+      this.knotPoints = [];
+      for (let i = 0; i < this.knotSamples; i++) {
+        const t = (i / this.knotSamples) * Math.PI * 2;
+        this.knotPoints.push(this.trefoilKnot(t));
+      }
+
+      // Initialize arrays
+      this.transformedKnotPoints = new Array(this.knotSamples);
+      this.precomputedFrames = [];
+
+      // Pre-compute all animation frames
+      this.precomputeAllFrames();
+
+      this.setupResize();
+      this.animate();
+    }
+
+    setupResize() {
+      const resize = () => {
+        const rect = this.container.getBoundingClientRect();
+        this.width = Math.floor(
+          rect.width / (this.widthMult * this.fontFactor)
+        ); // Approximate char width
+        this.height = Math.floor(
+          rect.height / (this.heightMult * this.fontFactor)
+        ); // Approximate char height
+
+        // Adjust scale based on viewport width
+        const baseWidth = 468;
+        const baseScale = 17.5;
+        this.scale = baseScale * Math.min(1.0, rect.width / baseWidth);
+
+        console.log(
+          `Resized to ${this.width}x${this.height}, scale=${this.scale.toFixed(2)}`
+        );
+
+        // Re-compute frames with new scale
+        this.precomputeAllFrames();
+
+        this.render();
+      };
+
+      window.addEventListener("resize", resize);
+      resize();
+    }
+
+    // Parametric equations for a trefoil knot
+    trefoilKnot(t: number) {
+      const x = Math.sin(t) + 2 * Math.sin(2 * t);
+      const y = Math.cos(t) - 2 * Math.cos(2 * t);
+      const z = -Math.sin(3 * t);
+      return { x, y, z };
+    }
+
+    // Pre-compute all frames at initialization
+    precomputeAllFrames() {
+      this.precomputedFrames = [];
+
+      for (let frame = 0; frame < this.totalFrames; frame++) {
+        // Each rotation rate is chosen so it completes an integer number of cycles
+        // over totalFrames, ensuring smooth looping
+        const t = (frame / this.totalFrames) * Math.PI * 2;
+
+        // These multipliers ensure smooth loops:
+        // 3 cycles, 5 cycles, 2 cycles respectively over the full animation
+        const cosX = Math.cos(t * 3);
+        const sinX = Math.sin(t * 3);
+        const cosY = Math.cos(t * 5);
+        const sinY = Math.sin(t * 5);
+        const cosZ = Math.cos(t * 2);
+        const sinZ = Math.sin(t * 2);
+
+        const framePoints: Array<{ x: number; y: number; z: number }> = [];
+
+        for (let i = 0; i < this.knotSamples; i++) {
+          const knot = this.knotPoints[i];
+
+          // Combined rotation (X, then Y, then Z) - inlined for speed
+          // Rotate X
+          let x = knot.x;
+          let y = knot.y * cosX - knot.z * sinX;
+          let z = knot.y * sinX + knot.z * cosX;
+
+          // Rotate Y
+          const tempX = x * cosY + z * sinY;
+          z = -x * sinY + z * cosY;
+          x = tempX;
+
+          // Rotate Z
+          const finalX = x * cosZ - y * sinZ;
+          const finalY = x * sinZ + y * cosZ;
+
+          // Scale and store
+          framePoints.push({
+            x: finalX * this.scale,
+            y: finalY * this.scale,
+            z: z * this.scale,
+          });
+        }
+
+        this.precomputedFrames.push(framePoints);
+      }
+    }
+
+    // Update transformed points from pre-computed frame
+    updateTransformedPoints() {
+      // Use floor to get integer frame index for lookup
+      const frameIndex = Math.floor(this.currentFrame) % this.totalFrames;
+      this.transformedKnotPoints = this.precomputedFrames[frameIndex];
+    }
+
+    // Calculate distance from a point to the knot surface (optimized)
+    distanceToKnot(px: number, py: number, pz: number) {
+      let minDistSq = Infinity;
+
+      // Adaptive sampling: check every Nth point first to find approximate closest
+      const coarseSampling = Math.max(1, Math.floor(this.knotSamples / 20));
+      let closestCoarseIndex = 0;
+
+      for (let i = 0; i < this.knotSamples; i += coarseSampling) {
+        const knot = this.transformedKnotPoints[i];
+        const dx = px - knot.x;
+        const dy = py - knot.y;
+        const dz = pz - knot.z;
+        const distSq = dx * dx + dy * dy + dz * dz;
+
+        if (distSq < minDistSq) {
+          minDistSq = distSq;
+          closestCoarseIndex = i;
+        }
+      }
+
+      // If we're already far away from the coarse check, return early
+      if (minDistSq > 2000) {
+        return Math.sqrt(minDistSq);
+      }
+
+      // Fine sampling: only check nearby points around the closest coarse point
+      const searchRadius = coarseSampling * 2;
+      const startIdx = Math.max(0, closestCoarseIndex - searchRadius);
+      const endIdx = Math.min(
+        this.knotSamples,
+        closestCoarseIndex + searchRadius
+      );
+
+      for (let i = startIdx; i < endIdx; i++) {
+        const knot = this.transformedKnotPoints[i];
+        const dx = px - knot.x;
+        const dy = py - knot.y;
+        const dz = pz - knot.z;
+        const distSq = dx * dx + dy * dy + dz * dz;
+
+        if (distSq < minDistSq) {
+          minDistSq = distSq;
+        }
+      }
+
+      return Math.sqrt(minDistSq);
+    }
+
+    // Render the knot
+    render() {
+      if (!this.width || !this.height) return;
+
+      // Update transformed knot points once per frame
+      this.updateTransformedPoints();
+
+      const buffer: string[] = [];
+      const aspectRatio =
+        (this.width / this.height) * (this.widthMult / this.heightMult);
+      const knotRadiusScaled = this.knotRadius * this.scale;
+      const knotRadiusScaledSq = knotRadiusScaled * knotRadiusScaled;
+
+      for (let y = 0; y < this.height; y++) {
+        let row = "";
+        for (let x = 0; x < this.width; x++) {
+          // Map screen coordinates to world coordinates
+          const worldX = (x / this.width - 0.5) * 80 * aspectRatio;
+          const worldY = (y / this.height - 0.5) * 80;
+
+          // Simplified ray marching - fewer steps
+          let brightness = 0;
+          const raySteps = 20; // Increased slightly for better quality
+
+          for (let step = 0; step < raySteps; step++) {
+            const depth = -50 + (step * 100) / raySteps;
+            const dist = this.distanceToKnot(worldX, worldY, depth);
+            const distSq = dist * dist;
+
+            // If we're close to the surface, calculate brightness
+            if (distSq < knotRadiusScaledSq) {
+              // Distance from surface (0 = on surface, 1 = at edge of tube)
+              const surfaceDist = dist / knotRadiusScaled;
+
+              // Calculate brightness based on distance and depth
+              const depthFactor = 1 - (depth + 50) / 100;
+              const thisBrightness = (1 - surfaceDist) * depthFactor;
+
+              if (thisBrightness > brightness) {
+                brightness = thisBrightness;
+              }
+            }
+          }
+
+          // Map brightness to ASCII character
+          const charIndex = Math.floor(
+            brightness * (this.asciiChars.length - 1)
+          );
+          row +=
+            this.asciiChars[
+              Math.max(0, Math.min(charIndex, this.asciiChars.length - 1))
+            ];
+        }
+        buffer.push(row);
+      }
+
+      this.canvas.textContent = buffer.join("\n");
+    }
+
+    animate() {
+      const currentTime = performance.now();
+      const deltaTime = currentTime - this.lastFrameTime;
+
+      // Calculate how many frames to advance based on elapsed time
+      // This ensures consistent speed regardless of refresh rate
+      const framesPerSecond = this.animationSpeed;
+      const frameIncrement = (deltaTime / 1000) * framesPerSecond;
+
+      this.currentFrame =
+        (this.currentFrame + frameIncrement) % this.totalFrames;
+      this.lastFrameTime = currentTime;
+
+      this.render();
+      requestAnimationFrame(() => this.animate());
+    }
+  }
+
+  const container = document.getElementById("ascii-canvas");
+  if (container) {
+    new TrefoilKnotRenderer(container);
+  }
+</script>

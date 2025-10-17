@@ -1,0 +1,15 @@
+---
+// Use this container class when you want to apply prose (long-form text)
+// styles to content on the page.
+import clsx from "clsx";
+const { className = "" } = Astro.props;
+---
+
+<div
+  class={clsx(
+    "text-balance sm:text-pretty max-w-full prose prose-base sm:prose-lg font-sans prose-h2:font-display prose-h3:font-display",
+    className
+  )}
+>
+  <slot />
+</div>
