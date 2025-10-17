@@ -5,7 +5,7 @@
 
 <div
   id="ascii-canvas"
-  class="absolute inset-0 overflow-hidden opacity-50 select-none"
+  class="absolute inset-0 overflow-hidden opacity-60 select-none"
 >
 </div>
 
@@ -91,6 +91,15 @@
     setupResize() {
       const resize = () => {
         const rect = this.container.getBoundingClientRect();
+
+        if (rect.width === 0 || rect.height === 0) {
+          // guard against zero-size container -- come back later
+          // when it has size
+          // console.log("Container has zero size, delaying resize...");
+          requestAnimationFrame(resize);
+          return;
+        }
+
         this.width = Math.floor(
           rect.width / (this.widthMult * this.fontFactor)
         ); // Approximate char width
