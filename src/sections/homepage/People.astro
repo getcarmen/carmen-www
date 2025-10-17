@@ -47,7 +47,7 @@ const people: {
             )}
             {person?.email && (
               <a
-                href={person?.email}
+                href={`mailto: ${person.name} <${person?.email}>`}
                 target="_blank"
                 aria-label="Email"
                 class="hover:text-carmen-red transition-colors text-sm"
