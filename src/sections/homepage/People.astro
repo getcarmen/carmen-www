@@ -1,8 +1,4 @@
 ---
-import LinkedIcon from "../../components/LinkedIcon.astro";
-import MailIcon from "../../components/MailIcon.astro";
-import WebIcon from "../../components/WebIcon.astro";
-
 const people: {
   name: string;
   title: string;
@@ -43,7 +39,7 @@ const people: {
             class="size-20 rounded-full outline-1 outline-neutral-500"
           />
           <div class="flex flex-col justify-between gap-y-2 text-base">
-            <h4 class="text-xl font-medium font-display tracking-tight leading-[1em]">
+            <h4 class="text-xl font-medium font-display tracking-tight leading-[1em] text-black">
               {person.name}
             </h4>
             {person?.title && (
