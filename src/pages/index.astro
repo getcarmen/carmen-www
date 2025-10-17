@@ -8,20 +8,25 @@ import Cards from "../components/Cards.astro";
 import Card from "../components/Card.astro";
 
 import HowWeWork from "../sections/homepage/how_we_work.md";
+import ContactForm from "../sections/homepage/ContactForm.astro";
 
-const cards = await getCollection("cards");
+// These are configured as a collection in src/content/config.ts
+// That may prove overkill just for cards; we'll see how it goes.
+const cards = (await getCollection("cards")).sort((a, b) =>
+  a.slug.localeCompare(b.slug)
+);
 ---
 
 <Layout>
   <Hero />
-  <Content>
+  <Content border>
     <Prose>
       <HowWeWork />
     </Prose>
   </Content>
-  <Content borders className="bg-neutral-100">
+  <Content border className="bg-neutral-100">
     <Prose>
-      <h2>What we offer</h2>
+      <h2 id="what-we-offer">What we offer</h2>
       <Cards>
         {
           cards.map(async (card) => {
@@ -35,5 +40,8 @@ const cards = await getCollection("cards");
         }
       </Cards>
     </Prose>
+  </Content>
+  <Content border>
+    <ContactForm />
   </Content>
 </Layout>
