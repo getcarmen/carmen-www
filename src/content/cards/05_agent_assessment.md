@@ -1,5 +1,5 @@
 ---
-title: "Agent Assessment, Management & Support"
+title: "Agent assessment, management & support"
 icon: fa-chart-line
 ---
 

@@ -1,5 +1,5 @@
 ---
-title: "Opportunity Research & Discovery"
+title: "Opportunity research & discovery"
 icon: fa-search
 ---
 

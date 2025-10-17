@@ -1,5 +1,5 @@
 ---
-title: "Agent Development & Prototyping"
+title: "Agent development & prototyping"
 icon: fa-code
 ---
 

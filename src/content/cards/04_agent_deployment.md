@@ -1,5 +1,5 @@
 ---
-title: "Agent Development & Integration"
+title: "Agent development & integration"
 icon: fa-rocket
 ---
 

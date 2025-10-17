@@ -1,5 +1,5 @@
 ---
-title: "Model Selection & Optimization"
+title: "Model selection & optimization"
 icon: fa-brain
 ---
 
