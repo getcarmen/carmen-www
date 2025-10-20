@@ -1,0 +1,30 @@
+---
+import Layout from "./Layout.astro";
+import Content from "../components/Content.astro";
+import Prose from "../components/Prose.astro";
+import clsx from "clsx";
+
+const { title, date } = Astro.props.frontmatter;
+---
+
+<Layout>
+  <Content>
+    <Prose>
+      <article>
+        <header>
+          <h1 class={clsx(date && "!mb-0")}>{title}</h1>
+          {
+            date && (
+              <time datetime={date} class="text-neutral-600 font-display">
+                {new Date(date).toLocaleDateString()}
+              </time>
+            )
+          }
+        </header>
+        <section>
+          <slot />
+        </section>
+      </article>
+    </Prose>
+  </Content>
+</Layout>
