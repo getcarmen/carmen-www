@@ -26,13 +26,13 @@ const cards = (await getCollection("cards")).sort((a, b) =>
   </Content>
   <Content border className="bg-neutral-100">
     <Prose>
-      <h2 id="what-we-offer">What we offer</h2>
+      <h2 id="what-we-offer">What we do</h2>
       <Cards>
         {
-          cards.map(async (card) => {
+          cards.map(async (card, i) => {
             const { Content: CardContent } = await card.render();
             return (
-              <Card {...card.data}>
+              <Card {...card.data} index={i}>
                 <CardContent />
               </Card>
             );

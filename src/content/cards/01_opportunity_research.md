@@ -1,6 +1,6 @@
 ---
-title: "Opportunity research & discovery"
+title: "Discover opportunities"
 icon: fa-search
 ---
 
-Using the "jobs to be done" approach derived from years of building enterprise software products, our engagements begin with understanding your business. During the first phase of our engagement we will focus on research and discovery - understanding challenges, opportunities, and feasibility.
+We start by partnering with you to understand your specific business challenges and goals. We assess your existing data infrastructure, workflows, and team capabilities to identify high-impact opportunities where AI can make a real difference. Then we work closely with your team to propose prototype work that is tailored to your unique context.
