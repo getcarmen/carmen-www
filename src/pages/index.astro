@@ -7,7 +7,7 @@ import Content from "../components/Content.astro";
 import Cards from "../components/Cards.astro";
 import Card from "../components/Card.astro";
 
-import HowWeWork from "../sections/homepage/how_we_work.md";
+import WhoWeAre from "../sections/homepage/who_we_are.md";
 import ContactForm from "../sections/homepage/ContactForm.astro";
 
 // These are configured as a collection in src/content/config.ts
@@ -21,18 +21,18 @@ const cards = (await getCollection("cards")).sort((a, b) =>
   <Hero />
   <Content border>
     <Prose>
-      <HowWeWork />
+      <WhoWeAre />
     </Prose>
   </Content>
   <Content border className="bg-neutral-100">
     <Prose>
-      <h2 id="what-we-offer">What we offer</h2>
+      <h2 id="how-we-engage">How we engage</h2>
       <Cards>
         {
-          cards.map(async (card) => {
+          cards.map(async (card, i) => {
             const { Content: CardContent } = await card.render();
             return (
-              <Card {...card.data}>
+              <Card {...card.data} index={i}>
                 <CardContent />
               </Card>
             );

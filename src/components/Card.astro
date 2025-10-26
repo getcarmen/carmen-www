@@ -1,13 +1,18 @@
 ---
 import clsx from "clsx";
-const { icon, title } = Astro.props;
+const { icon, title, index } = Astro.props;
 ---
 
 <!-- use tailwindcss to make a good looking card with icon image, title, and content (slot) -->
 <div
   class="w-96 cursor-pointer border border-gray-300 rounded-lg p-6 shadow-none hover:shadow-2xl transition-shadow duration-300"
 >
-  {icon && <i class={clsx("fas", icon, "text-4xl text-carmen-red")} />}
+  <div
+    class="font-display font-bold rounded-full bg-carmen-red text-white w-12 h-12 flex items-center justify-center mb-4"
+  >
+    {index + 1}
+  </div>
+  <!-- {icon && <i class={clsx("fas", icon, "text-4xl text-carmen-red")} />} -->
   {title && <h3 class="text-xl font-display font-semibold mb-4">{title}</h3>}
   <div class="text-gray-700">
     <slot />
