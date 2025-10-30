@@ -15,22 +15,8 @@ This is the reality we've built using the power of AI.
 
 This article walks through how we transformed a manual, time-intensive claims review process into an intelligent, automated system that processes claims in real-time while maintaining detailed audit trails. More importantly, it demonstrates the capabilities of AI to tackle similar data-intensive challenges in your organization.
 
-**Project Assumptions:**
-1. Our claims data is complete, nicely formatted, and error-free
-2. We generated fake claims using a defined schema
-3. Only BCBS medical policies included (UHC, Aetna, etc. excluded to limit scope)
-4. Production deployment would require additional data validation and multi-payer support
-5. AI State of the Art is evolving rapidly, bleeding edge capabilities today will be basic functionality within months. 
-
-## Key Outcomes
-
-- ⚡ **Speed**: Process hundreds of claims in minutes
-- 💰 **Cost**: <$0.01 per claim (vs $25-50 manual review)
-- 📊 **Consistency**: 92.5% average confidence across all decisions
-- 🔍 **Auditability**: 100% of decisions include policy citations with page numbers
-- 🤖 **Scalability**: Process 1,000+ claims per day, with opportunities to expand as needed
-
 ## The Challenge: A Human Bottleneck
+
 Processing claims has traditionally been a paper-chase, back-and-forth nightmare causing lengthy delays in provider revenue cycles and error prone claim processing for payers:
 
 1. A provider submits a claim for a knee injection procedure
@@ -58,45 +44,48 @@ We loaded 416 [Premera Blue Cross Blue Shield medical policy documents](https://
 - Exclusions and special requirements
 - Authorization requirements
 
-With structured medical policy data in a database we could query, the reality of building an AI Claims Analyst was becoming a reality. 
+With structured medical policy data in a database we could query, the reality of building an AI Claims Analyst was becoming a reality.
 
- And the results blew away our expectations. We expected a 10x improvement on processing speed with variable performance quality. What we got was a 100x speed multiplier with impeccable accuracy. Here's how we did it.
+And the results blew away our expectations. We expected a 10x improvement on processing speed with variable performance quality. What we got was a 100x speed multiplier with impeccable accuracy. Here's how we did it.
 
 ## Step 1: Making PDFs Machine-Readable
 
-### The Challenge with PDFs 
-PDFs can be keyword searched, but those searches have very limited functionality. Trying to run any type of query or analysis on PDF information is impossible in its native format. 
+### The Challenge with PDFs
+
+PDFs can be keyword searched, but those searches have very limited functionality. Trying to run any type of query or analysis on PDF information is impossible in its native format.
 
 ### The Solution: Structured Data Extraction
-Imagine being able to recall everything you've ever read in complete detail, and be able to reference even the finest details anytime you needed them? That's how powerful these recall task agents are. They are complimentary skills that humans just aren't very good at. 
+
+Imagine being able to recall everything you've ever read in complete detail, and be able to reference even the finest details anytime you needed them? That's how powerful these recall task agents are. They are complimentary skills that humans just aren't very good at.
 
 We called on the [Datalab Extraction API](https://documentation.datalab.to/docs/welcome/api#structured-extraction) to pull structured data out of the policy pdf documents. Here's what happened:
 
-1. **Schema Design**: We created a policy schema defining exactly what information we were looking for from each policy document. 
+1. **Schema Design**: We created a policy schema defining exactly what information we were looking for from each policy document.
 2. **Automated Extraction**: We sent 416 PDFs to the Datalab Extraction API (391 processed)
 3. **Structured Output**: Datalab returned JSON files that we're able to query
-4. **Database Loading**: We loaded everything into DuckDB, which is well-suited for fast queries on data that includes lots of text (ie policy information). 
+4. **Database Loading**: We loaded everything into DuckDB, which is well-suited for fast queries on data that includes lots of text (ie policy information).
 
 #### Results
 
 - ✅ 416 PDFs processed and loaded into the "policy knowledge base"
 - ✅ 391 policies successfully extracted and structured - for demo purposes, we excluded 25 policies that were over 100 pages in length
-- ✅ All policy data now searchable in milliseconds using Claude Desktop using a MCP Server 
+- ✅ All policy data now searchable in milliseconds using Claude Desktop using a MCP Server
 
 ```
 Policy ID: 1.01.18
 Policy Name: Pneumatic Compression Pumps for Treatment of Lymphedema and Venous Ulcers
 Procedure Codes: E0650, E0655, E0660...
 Coverage: Durable Medical Equipment (DME)
-Medical Necessity: 
+Medical Necessity:
   - Failed to respond to conservative measures
-  - Clinical documentation supporting member has lymphedema which has failed to respond to limb elevation or compression 
+  - Clinical documentation supporting member has lymphedema which has failed to respond to limb elevation or compression
 Source: Document 1.01.18.pdf
 ```
 
 ## Step 2: The Magic of AI - Turning Data into Intelligence with MCP
 
 Even with searchable policies and all of the required information, someone still needs to:
+
 - Understand the claim
 - Find relevant policies
 - Read and interpret policy language
@@ -104,11 +93,12 @@ Even with searchable policies and all of the required information, someone still
 - Make a recommendation
 - Document the reasoning
 
-This is where Large Language Models like GPT, Gemini, Llama, or Claude Sonnet are incredibly powerful. Utilizing a LLM to do the heavy lifting allows the human user to focus their time on reviews instead of performing research tasks. 
+This is where Large Language Models like GPT, Gemini, Llama, or Claude Sonnet are incredibly powerful. Utilizing a LLM to do the heavy lifting allows the human user to focus their time on reviews instead of performing research tasks.
 
 #### Logical Policy Matching
 
 When a claim comes in, the system automatically finds relevant policies by:
+
 - Matching procedure codes (if the claim has code 20610, find policies mentioning 20610)
 - Matching keywords in service descriptions (if the claim mentions "knee injection," find policies about knee procedures)
 - Matching service categories (if it's an orthopedic procedure, look in orthopedic policies)
@@ -118,16 +108,16 @@ When a claim comes in, the system automatically finds relevant policies by:
 We send the claim information along with the relevant policies to our LLM with very specific instructions:
 
 ```
-1. You are a healthcare provider claims analyst. 
-2. Review this claim against the medical policies from BCBSA.  
+1. You are a healthcare provider claims analyst.
+2. Review this claim against the medical policies from BCBSA.
 3. Provide a recommendation with specific citations.
 ```
 
-The AI reads through the policy details, compares them to the claim information, and provides a well documented recommendation. It's able to do this because LLMs are trained on immense amounts of data and information, providing them with expertise across a wide variety of domains. When the LLM can use that knowledge base and apply it to a speciality task with local data, like it can in this case, the power of AI starts to produce measurable business results. 
+The AI reads through the policy details, compares them to the claim information, and provides a well documented recommendation. It's able to do this because LLMs are trained on immense amounts of data and information, providing them with expertise across a wide variety of domains. When the LLM can use that knowledge base and apply it to a speciality task with local data, like it can in this case, the power of AI starts to produce measurable business results.
 
 #### Structured Responses
 
-The system returns structured JSON data, which makes it very easy to connect with other software or databases related to the task. Depending on the response, setting up additional workflows based on the status of the claim is straghtforward. Connecting downstream workflows and reporting, managing resources and optimizing people, improving patient outcomes and experiences. 
+The system returns structured JSON data, which makes it very easy to connect with other software or databases related to the task. Depending on the response, setting up additional workflows based on the status of the claim is straghtforward. Connecting downstream workflows and reporting, managing resources and optimizing people, improving patient outcomes and experiences.
 
 ```json
 {
@@ -154,26 +144,25 @@ The system returns structured JSON data, which makes it very easy to connect wit
 
 #### AI Model Evaluations
 
-Not all AI models are the same, they each have a unique style, personality, and core competencies. One model might be a strong analyst but a poor writer. Some cost $3 per request, others are $0.01. Don't use a $3 model when a $0.01 model will do the job well enough. Model evaluations are a critical step in developing and deploying AI Agents. 
+Not all AI models are the same, they each have a unique style, personality, and core competencies. One model might be a strong analyst but a poor writer. Some cost $3 per request, others are $0.01. Don't use a $3 model when a $0.01 model will do the job well enough. Model evaluations are a critical step in developing and deploying AI Agents.
 
-We tested 8 different models for the claims processor using [Oxen.ai](https://www.oxen.ai) and the results were enlightening. Performance variance was quite high between the models for this use case, and the more advanced models didn't consistently outperform the more basic models as you might expect. Cost was also a big consideration as we're thinking about the job at scale - with the most expensive models costing 300x more than our base model. 
+We tested 8 different models for the claims processor using [Oxen.ai](https://www.oxen.ai) and the results were enlightening. Performance variance was quite high between the models for this use case, and the more advanced models didn't consistently outperform the more basic models as you might expect. Cost was also a big consideration as we're thinking about the job at scale - with the most expensive models costing 300x more than our base model.
 
-For our evaluation we processed 100 claims submitted in a csv file. The four models below completed the task sufficiently and we verified claims were processed with 100% accuracy. The other four models did not perform well or had trouble processing the job at all. As you can see with the results, Open AI's GPT-4o-mini model performed very well both in terms of cost and quality of results. 
+For our evaluation we processed 100 claims submitted in a csv file. The four models below completed the task sufficiently and we verified claims were processed with 100% accuracy. The other four models did not perform well or had trouble processing the job at all. As you can see with the results, Open AI's GPT-4o-mini model performed very well both in terms of cost and quality of results.
 
-| Model | Processing Time | Cost |
-|-------|----------------|------|
-| Open AI GPT-4o-mini | 4m 38s | $0.0089 |
-| Open AI GPT 4o | 2m 34s | $0.1409 |
-| Gemini 2.5 Pro Preview | 4m 45s | $0.0362 |
-| Anthropic Claude Sonnet 4 | 3m 39s | $0.0356 |
-
-
-
+| Model                     | Processing Time | Cost    |
+| ------------------------- | --------------- | ------- |
+| Open AI GPT-4o-mini       | 4m 38s          | $0.0089 |
+| Open AI GPT 4o            | 2m 34s          | $0.1409 |
+| Gemini 2.5 Pro Preview    | 4m 45s          | $0.0362 |
+| Anthropic Claude Sonnet 4 | 3m 39s          | $0.0356 |
 
 ## Step 3: Making a Conversational Agent
+
 Making the system entirely automated introduces risk, especially when processing highly complex, unique medical claims. The AI Claims Agent is designed to amplify a claims specialist, not replace them. Making it conversational reduces the need for users to:
+
 - Learn a new UI or process
-- Fill out forms 
+- Fill out forms
 - Navigate complex claims processes
 - Track field names and codes, building their case for the claim
 
@@ -182,26 +171,30 @@ Making the system entirely automated introduces risk, especially when processing
 The Model Context Protocol (MCP) acts as a secure communication layer that allows a LLM like Claude to interact with our specialized claims processing system. We won't cover securing your MCP server and user authentication here, that's an entire article on it's own that we'll cover seperately. Just remember, securing your agent is critical.
 
 **1. Tool Registration**: Our MCP server exposes specific capabilities for Claude to utilize:
+
 - `search_policies`: Find relevant medical policies by procedure codes or keywords
 - `process_claim`: Analyze a claim against applicable policies
 - `get_policy_details`: Retrieve specific policy information and requirements
 
 **2. Intelligent Routing**: When Claude receives a claims-related request, it:
+
 - Parses the natural language input to extract claim details
 - Determines which tools are needed based on the request type
 - Calls the appropriate MCP tools with structured parameters
 
 **3. Claims Processing Engine**: Our backend system:
+
 - Queries the DuckDB policy database for matching policies
 - Sends claim + policy data to the GPT-4o-mini API for analysis
 - Returns structured JSON with recommendations, confidence scores, and citations
 
 **4. Response Assembly**: Claude receives the structured data and:
+
 - Formats it into human-readable language
 - Highlights key findings and policy references
 - Provides actionable next steps for the user
 
-This architecture allows Claude to leverage domain-specific expertise while maintaining the conversational interface users expect, creating a seamless bridge between AI chat and specialized claims processing logic. 
+This architecture allows Claude to leverage domain-specific expertise while maintaining the conversational interface users expect, creating a seamless bridge between AI chat and specialized claims processing logic.
 
 **Working with your AI Agent is as easy as a conversation with a colleague**
 
@@ -209,7 +202,7 @@ This is where the magic happens for users. We integrated our system with Claude 
 
 ## Working a Claim
 
-Instead of researching policies and filling out forms, users can assign the heavy lifting to Claude by simply asking Claude to work the claim. The input Claude needs is fairly open ended, the LLM can interpret requests similar to how a trained professional would - and in some cases better. I've tested this with dumping a .xls file with 100 claims on it and no other context, I've dumped a single line from a spreadsheet into the chat window, and I've provided very structured data like below. In all three cases, the agent had no trouble processing the claim(s). We can even converse about specific policies before processing. The Claims AI Agent truly is an extension of your team, ready to assist as much or as little as necessary. 
+Instead of researching policies and filling out forms, users can assign the heavy lifting to Claude by simply asking Claude to work the claim. The input Claude needs is fairly open ended, the LLM can interpret requests similar to how a trained professional would - and in some cases better. I've tested this with dumping a .xls file with 100 claims on it and no other context, I've dumped a single line from a spreadsheet into the chat window, and I've provided very structured data like below. In all three cases, the agent had no trouble processing the claim(s). We can even converse about specific policies before processing. The Claims AI Agent truly is an extension of your team, ready to assist as much or as little as necessary.
 
 ```
 User: "Please process this claim:
@@ -220,7 +213,7 @@ User: "Please process this claim:
 - Amount: $429.33
 - Provider: Dr. Smith, Rheumatologist
 - Prior auth: No
-- Clinical notes: Patient has tried physical therapy for 12 weeks 
+- Clinical notes: Patient has tried physical therapy for 12 weeks
   with no improvement. X-rays show moderate joint space narrowing."
 
 Claude: "I'll process this claim against our policies..."
@@ -232,8 +225,8 @@ Claude: "✅ CLAIM APPROVED
 Recommendation: APPROVE
 Confidence: 95%
 
-This claim meets the medical necessity requirements for 
-viscosupplementation (Policy 1.01.18). The patient meets all 
+This claim meets the medical necessity requirements for
+viscosupplementation (Policy 1.01.18). The patient meets all
 key criteria:
 
 ✓ Age 38 (minimum 18 required)
@@ -269,7 +262,7 @@ I've successfully processed all 10 claims from your CSV file. Here's a summary:
 1. **APP-ORTH-020** - $429.33 - Knee injection - **APPROVED** (95% confidence)
    - Medical necessity documented with failed conservative treatment
 
-2. **APP-ORTH-011** - $338.51 - Knee injection - **APPROVED** (95% confidence)  
+2. **APP-ORTH-011** - $338.51 - Knee injection - **APPROVED** (95% confidence)
    - Prior authorization obtained
 
 3. **APP-CARD-001** - $264.51 - Cardiovascular stress test - **APPROVED** (95% confidence)
@@ -297,13 +290,11 @@ I've successfully processed all 10 claims from your CSV file. Here's a summary:
 ```
 
 ### Key Insights
+
 - **Total approved:** $2,489.91 | **Total rejected:** $2,105.97
 - **Success rate:** 60% approval rate
 - **Main rejection reasons:** Missing referrals, insufficient documentation
 - **Processing time:** 42 seconds for 10 complex claims"
-
-
-
 
 ### Claims Processing Results
 
@@ -319,22 +310,23 @@ I've successfully processed all 10 claims from your CSV file. Here's a summary:
 
 This pattern we recognize with claims exists in many data-intensive workflows where our professional experience over time becomes an asset. With a more robust system for recalling that information and details about those experiences, we can focus on work that we excel at: being creative, intuitive, and reasoning about novel challenges we face. To identify real world examples where agents like the Claims AI can excel, we've identified projects with the following characteristics to be great candidates for evaluation:
 
-1. **Large Document Rulesets**: Policies, contracts, regulations, or manuals provide a ruleset for complex manual tasks. 
+1. **Large Document Rulesets**: Policies, contracts, regulations, or manuals provide a ruleset for complex manual tasks.
 2. **Repetitive Evaluation**: Comparing requests/applications against a well defined criteria
 3. **Need for Citations**: Regulatory compliance, audit trails, legal protection
 4. **Speed Matters**: Backlog reduction, faster turnaround, information reference, competitive advantages
 
-
 ## How We Built This
-As with any software development in the age of AI, it's not difficult to write a bunch of code. The challenge lies in designing an application that is reliable, focused, secure, and effective in addressing the job to be done. 
 
-For this project, the most critical piece was preparing the information to train the agent to be an expert on our medical policies. Because of the amorphous nature of PDFs, where they lack consistent structure from one to the next, we had to be thoughtful about the schema of our extracted data. How do we design a knowledge base for policy expertise necessary to process claims accurately? We ran a few iterations of this schema before we ended up with something sufficient. For a production environment, this schema would likely evolve over time and be a major piece of our version improvements. 
+As with any software development in the age of AI, it's not difficult to write a bunch of code. The challenge lies in designing an application that is reliable, focused, secure, and effective in addressing the job to be done.
 
-When designing and building AI Agents, the most important thing to do is keep them simple. Make them very specialized, dedicated to performing precise tasks over and over again. Don't try to make a single agent do too many different things. This will help keep your Agent code bases organized and make tracking down issues/bugs much easier. It also simplifies security and agent authentication. 
+For this project, the most critical piece was preparing the information to train the agent to be an expert on our medical policies. Because of the amorphous nature of PDFs, where they lack consistent structure from one to the next, we had to be thoughtful about the schema of our extracted data. How do we design a knowledge base for policy expertise necessary to process claims accurately? We ran a few iterations of this schema before we ended up with something sufficient. For a production environment, this schema would likely evolve over time and be a major piece of our version improvements.
+
+When designing and building AI Agents, the most important thing to do is keep them simple. Make them very specialized, dedicated to performing precise tasks over and over again. Don't try to make a single agent do too many different things. This will help keep your Agent code bases organized and make tracking down issues/bugs much easier. It also simplifies security and agent authentication.
 
 Getting up and running with AI Agents can be done in a matter of weeks. Security requirements and regulated/sensitive data environments are the most impactful variables on these timelines, but building evaluations and prototypes in these cases can be very helpful before making a bigger investment. This was our timeline for the Claims AI project:
 
 **Week 1: Data Extraction**
+
 - Designed policy schema
 - Tested extraction on 5-10 sample policies
 - Refined schema based on results
@@ -344,6 +336,7 @@ Getting up and running with AI Agents can be done in a matter of weeks. Security
 - **Cost**: Datalab API fees (~$64 for >6,000 pages of PDFs)
 
 **Week 2: Claims Processor Development**
+
 - Built policy matching logic
 - Integrated GPT-4 API
 - Designed prompt engineering for accurate results
@@ -354,6 +347,7 @@ Getting up and running with AI Agents can be done in a matter of weeks. Security
 - **Cost**: OpenAI Subscription with API Access ($20/mo)
 
 **Week 3: MCP Server Integration**
+
 - Implemented JSON-RPC protocol
 - Created tool definitions
 - Integrated with claims processor
@@ -363,6 +357,7 @@ Getting up and running with AI Agents can be done in a matter of weeks. Security
 - **Cost**: Development time only
 
 **Week 3.5: Testing & Refinement**
+
 - Created test claim dataset
 - Ran accuracy validation
 - Fixed edge cases
@@ -372,6 +367,7 @@ Getting up and running with AI Agents can be done in a matter of weeks. Security
 - **Cost**: Oxen.ai Evaluation & Testing ($14), API testing ($11)
 
 **Total Implementation:**
+
 - **Timeline**: 4 weeks
 - **Team**: 1 developer
 - **One-time Costs**: <$100
@@ -400,15 +396,18 @@ Here's what we've learned that might surprise you: AI errors tend to be consiste
 ## Success Metrics & KPIs
 
 ### How to Measure Success
-With any innovation project, it's important to have KPIs so you can make informed decisions about continuing to invest, expanding the scope, or even shutting things down. While every business is unique, these are some standard metrics to consider when deploying a Claims Agent. 
+
+With any innovation project, it's important to have KPIs so you can make informed decisions about continuing to invest, expanding the scope, or even shutting things down. While every business is unique, these are some standard metrics to consider when deploying a Claims Agent.
 
 **Operational Metrics:**
+
 - ⚡ **Processing Time**: Target <10 seconds per claim
 - 🎯 **Auto-Approval Rate**: High confidence claims (target >90%)
 - 👥 **Human Review Rate**: Medium/low confidence (target <10%)
 - ✅ **Override Rate**: How often humans disagree with AI (target <2%)
 
 **Financial Metrics:**
+
 - 💰 **Cost Per Claim**: Track API costs (target <$0.02)
 - 📊 **Labor Savings**: Reduction in manual processing hours
 - 🚫 **Reduce Errors**: Reduction of unnecessary claim payments
@@ -416,23 +415,25 @@ With any innovation project, it's important to have KPIs so you can make informe
 - 💵 **ROI**: Total savings vs implementation costs
 
 **Quality Metrics:**
+
 - 🎓 **Accuracy Rate**: Correct recommendations validated by humans
 - 📋 **Citation Coverage**: % of decisions with proper references
 - 🔍 **Audit Pass Rate**: % passing quality review
 - ⏱️ **Time to Resolution**: End-to-end claim processing time
 
 **User Adoption Metrics:**
+
 - 😊 **User Satisfaction**: Survey scores
 - 📈 **Usage Rate**: % of claims processed via AI vs manual
 - 🎪 **Error Reports**: Issues reported by users
 - 💪 **Training Time**: Time to proficiency for new users
-
 
 ## Conclusion
 
 The healthcare claims processing system we built isn't just about faster claims—it's a blueprint for how AI can augment human intelligence in data-intensive work.
 
 **The Core Principles:**
+
 1. ✅ **Structure First**: Get data organized and queryable
 2. ✅ **AI Superpowers**: Empower humans, don't replace them
 3. ✅ **Always Cite**: Maintain auditability and explainability
